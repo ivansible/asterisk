@@ -1,5 +1,0 @@
----
-- name: ivansible.asterisk_core root action 1
-  debug:
-    msg: action 1
-...

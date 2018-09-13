@@ -1,4 +1,336 @@
 ---
 # defaults file for ivansible.asterisk_core
 
+# inherited from asterisk_base:
+#   ast_reset
+#   ast_experimental
+#   ast_ssl_cert
+#   ast_ssl_key
+#   ast_domains
+#   ast_default_language
+#   ast_default_codecs
+#   ast_qualify_value
+#   ast_dialplan_hints
+#   ast_local_dir
+
+
+ast_ip_list: "{{ ansible_all_ipv4_addresses
+               | reject('match', '^10[.]')
+               | reject('match', '^172[.]1[0-9][.]')
+               | list }}"
+
+ast_default_nat: yes
+
+
+ast_softphones: []
+  #- name: softphone1
+  #  password: secretpass1
+  #  exten: 101
+  #  srtp: no
+  #  active: yes
+
+ast_softphones_secure: yes
+
+
+ast_user_agent: Asterisk PBX 13.18
+
+ast_voicemail_pass: 1234
+
+ast_record_file: /tmp/asterisk-record.wav
+
+
+ast_pg_host: localhost
+ast_pg_port: 5432
+ast_pg_dbname: asterisk
+ast_pg_user: asterisk
+ast_pg_pass: secret
+ast_pg_dump_url: ""
+
+
+ast_moh_mp3_tarball_url: https://www.dropbox.com/s/25ue131u8owpir1/moh-extras-mp3.tar.gz?dl=1
+
+ast_sounds_extras_wav_url: https://www.dropbox.com/s/t5i3lxzptnaqetl/sounds-extras-wav.tar.gz?dl=1
+
+
+# barcelona shows better benchmark performance on a small vps machine
+ast_g729_codec_type: ast130-gcc4-glibc2.2-x86_64-barcelona
+ast_g729_codec_url: http://asterisk.hosting.lv/bin/codec_g729-{{ ast_g729_codec_type }}.so
+
+ast_g729_bench_enable: no
+ast_g729_bench_free_tarball_url: ''
+ast_g729_bench_digium_tarball_url: ''
+
+
+ast_params_default:
+  - file: asterisk
+    section: options
+    params:
+      - execincludes: "no"
+      - systemname: "{{ ast_domains | first }}"
+      - runuser: asterisk
+      # Note:
+      # when `rungroup` is set, the asterisk process will have only
+      # those access permissions that are associated with that group.
+      # when `rungroup` is *not* set, but `runuser` is set, the asterisk
+      # process will have access permissions associated with *all*
+      # groups where the user participates.
+      # this allows to control permissions of the asterisk process
+      # more flexibly (e.g. access to ssl certificates).
+      #- rungroup: asterisk
+
+ast_params_group: []
+ast_params_host: []
+
+
+ast_modules_preload:
+  - res_odbc
+  #- res_config_odbc
+  # preload res_speech as a workaround for loader warning
+  #   "loading module 'res_agi.so': undefined symbol: ast_speech_change"
+  - res_speech
+
+ast_modules_noload:
+  # load either OSS or ALSA, not both
+  # ALSA fails to find a JACK server
+  # OSS fails with "Already have a handler for type 'Console'"
+  - chan_alsa
+  - chan_oss
+
+  # not using LUA or AEL dialplan flavors
+  # we use old-school asterisk dialplan
+  - pbx_ael
+  - pbx_lua
+
+  # not using CEL
+  - cel_custom
+  - cel_pgsql
+  - cel_tds
+
+  # not using these modules
+  - chan_skinny
+  - res_config_ldap
+  - res_phoneprov
+
+  # disable graphic consoles
+  - pbx_gtkconsole
+  - pbx_kdeconsole
+
+  # intercom application is obsoleted by chan_oss
+  - app_intercom
+
+  # modem channel driver is obsolete
+  - chan_modem
+  - chan_modem_aopen
+  - chan_modem_bestdata
+  - chan_modem_i4l
+
+  # capi is only used with compatibe hardware
+  - chan_capi
+
+  # disable cdr logging to sqlite since it writes
+  # unconditionally to cdr.db without a way to rotate it
+  - cdr_sqlite
+
+  # using only cdr_adaptive_odbc
+  # not using these CDR modules
+  - cdr_csv
+  - cdr_pgsql
+  - cdr_radius
+
+  # these conflict with app_directory.so and each other
+  - app_directory_odbc
+  - res_config_odbc
+  - res_config_pgsql
+
+  # AGI is required by the daytime tasks and shall not be disabled.
+  # the AGI module loads successfully but raises warning
+  # "res_agi.so: undefined symbol: ast_speech_change",
+  # which is in fact harmless. the warning probably results from
+  # cross-symbol links between agi and speech modules.
+  #- res_agi
+
+  # disable various modules
+  # these modules warn about undefined symbols in asterisk 13.1 xenial
+  - app_speech_utils
+  - cel_odbc
+  - res_calendar_caldav
+  - res_calendar_ews
+  - res_calendar_exchange
+  - res_calendar_icalendar
+  - res_fax_spandsp
+  - res_hep_rtcp
+  - res_monitor
+
+  # disable pjsip
+  # we use old-school chan_sip
+  # these modules warn about undefined symbols in asterisk 13.1 xenial
+  - chan_pjsip
+  - func_pjsip_endpoint
+  - res_hep_pjsip
+  - res_pjsip
+  - res_pjsip_acl
+  - res_pjsip_authenticator_digest
+  - res_pjsip_caller_id
+  - res_pjsip_dialog_info_body_generator
+  - res_pjsip_diversion
+  - res_pjsip_dtmf_info
+  - res_pjsip_endpoint_identifier_anonymous
+  - res_pjsip_endpoint_identifier_ip
+  - res_pjsip_endpoint_identifier_user
+  - res_pjsip_exten_state
+  - res_pjsip_header_funcs
+  - res_pjsip_logger
+  - res_pjsip_messaging
+  - res_pjsip_multihomed
+  - res_pjsip_mwi_body_generator
+  - res_pjsip_mwi
+  - res_pjsip_nat
+  - res_pjsip_notify
+  - res_pjsip_one_touch_record_info
+  - res_pjsip_outbound_authenticator_digest
+  - res_pjsip_outbound_publish
+  - res_pjsip_outbound_registration
+  - res_pjsip_path
+  - res_pjsip_phoneprov_provider
+  - res_pjsip_pidf_body_generator
+  - res_pjsip_pidf_digium_body_supplement
+  - res_pjsip_pidf_eyebeam_body_supplement
+  - res_pjsip_publish_asterisk
+  - res_pjsip_pubsub
+  - res_pjsip_refer
+  - res_pjsip_registrar_expire
+  - res_pjsip_registrar
+  - res_pjsip_rfc3326
+  - res_pjsip_sdp_rtp
+  - res_pjsip_send_to_voicemail
+  - res_pjsip_session
+  - res_pjsip_t38
+  - res_pjsip_transport_websocket
+  - res_pjsip_xpidf_body_generator
+
+  # ari is not used and not configured
+  # ari raises error on startup:
+  # "ari/config.c: No configured users for ARI"
+  - res_ari
+  - res_ari_applications
+  - res_ari_events
+
+  # disable ari
+  # these modules warn about undefined symbols in asterisk 13.1 xenial
+  - res_ari_asterisk
+  - res_ari_bridges
+  - res_ari_channels
+  - res_ari_device_states
+  - res_ari_endpoints
+  - res_ari_mailboxes
+  - res_ari_playbacks
+  - res_ari_recordings
+  - res_ari_sounds
+
+  # disable stasis
+  # these modules warn about undefined symbols in asterisk 13.1 xenial
+  - app_stasis
+  - res_stasis_answer
+  - res_stasis_device_state
+  - res_stasis_playback
+  - res_stasis_recording
+
+  # disable pjsip and some other modules from asterisk 13.18 bionic
+  # these modules warn about undefined symbols
+  - cdr_radius
+  - cel_radius
+  - func_pjsip_aor
+  - func_pjsip_contact
+  - res_pjsip_config_wizard
+  - res_pjsip_dlg_options
+  - res_pjsip_empty_info
+  - res_pjsip_history
+  - res_pjsip_sips_contact
+  - res_pjsip_transport_management
+
+
+ast_packages_install:
+  # asterisk core
+  - asterisk
+  - asterisk-config
+  - asterisk-modules
+  - asterisk-voicemail
+
+  # it is important to install format-agnostic asterisk sound packages
+  # (and not asterisk-core-sounds-{en,ru}-wav) because they create
+  # the en/ru symbolic links under /usr/share/asterisk/sounds,
+  # which are required by the extra sounds installation task.
+  - asterisk-core-sounds-en
+  - asterisk-core-sounds-ru
+
+  # for playing MP3 MOH natively
+  - asterisk-mp3
+
+  # for converting moh files
+  - sox
+  - libsox-fmt-all
+  - libsox-fmt-mp3
+
+  # for snakeoil certificate
+  - ssl-cert
+
+  # for agi scripts
+  - python3
+
+  # for database
+  - python-psycopg2
+  - python3-psycopg2
+  - postgresql-client
+  - unixodbc
+  - odbc-postgresql
+
+  # for sip debugging
+  - ngrep
+  - sngrep
+  - sipgrep
+  - tcpdump
+
+  # asterisk requires precise time
+  - ntp
+  - ntpdate
+  # for restoring asterisk config
+  - rsync
+  # for downloading g729 codecs
+  - wget
+
+
+ast_rtp_port_start: 10100
+ast_rtp_port_end: 10300
+
+ast_ami_port: 5038
+ast_http_port: 8088
+ast_https_port: 8089
+ast_ami_admin_password: ast-ami-secret
+
+
+ast_sip_allowed_networks:
+  - any
+
+ast_reject_networks: []
+  #-192.168.77.1/32
+
+# yes = prefer ipv4
+# no  = do not prefer ipv4
+# undefined = do not change /etc/gai.conf
+#ast_prefer_ipv4: no
+
+# stun address:
+#  stun.tld.com
+#  stun.tld.com:3478
+#  "172.1.2.3"
+#  "172.1.2.3:3478"
+ast_stun_addr: ""
+
+# we do not step-sync time by default to save some playbook time
+# if you think syncing is important, set time server to:
+# pool.ntp.org
+ast_ntp_server: ""
+
+# cpu quota examples: 5% 60% 100% no
+ast_cpu_quota: no
 ...

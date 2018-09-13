@@ -1,0 +1,22 @@
+---
+- name: grant remote user with access to asterisk
+  user:
+    name: "{{ ansible_user_id }}"
+    groups: asterisk
+    append: yes
+  become: yes
+
+- name: common bashrc customizations
+  import_role:
+    name: ivansible.dev_user
+    tasks_from: bashrc.yml
+
+- name: alias for running asterisk console
+  lineinfile:
+    path: ~/.bashrc.local
+    create: yes
+    line: "alias astcli='setterm -linewrap off ; sudo asterisk -r ; setterm -linewrap on'"
+    regexp: "^alias astcli *="
+    insertbefore: "^# --- user settings ---"
+  become: no
+...

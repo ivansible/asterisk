@@ -1,10 +1,59 @@
 ---
-# perform setup as a non-root user
+# refresh host facts as a non-root user
 - setup:
   become: no
 
-# use import to become root globally
-- name: become root
-  import_tasks: root.yml
+- import_tasks: install.yml
   become: yes
+  tags: ast_install
+
+- import_tasks: ssl.yml
+  become: yes
+  tags: ast_ssl
+
+- import_tasks: g729.yml
+  become: yes
+  tags: ast_g729
+
+- import_tasks: config.yml
+  become: yes
+  tags: ast_config
+
+- import_tasks: musiconhold.yml
+  become: yes
+  tags: ast_moh
+
+# AGI script speaking current time in ru/en
+- import_tasks: daytime.yml
+  become: yes
+  tags: ast_daytime
+
+- import_tasks: database.yml
+  become: yes
+  tags: ast_database
+
+- import_tasks: dialplan.yml
+  become: yes
+  tags: ast_dialplan
+
+- import_tasks: systemd.yml
+  become: yes
+  tags:
+    - ast_systemd
+    - ast_cpu_quota
+
+- import_tasks: firewall.yml
+  become: yes
+  tags: ast_firewall
+
+# asterisk rtp stream bridging requires precise local time
+- import_tasks: timesync.yml
+  become: yes
+  tags: ast_timesync
+
+- import_tasks: user.yml
+  become: no
+  tags: ast_user
+
+- meta: flush_handlers
 ...

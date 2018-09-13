@@ -1,0 +1,100 @@
+---
+- debug:
+    msg:
+      - "ast_domains: {{ ast_domains }}"
+      - "ast_ip_list: {{ ast_ip_list }}"
+
+- name: remove ael and lua flavors, using only old-school extensions.conf
+  file:
+    path: /etc/asterisk/{{ item }}
+    state: absent
+  loop:
+    - extensions.ael
+    - extensions.lua
+    - extensions_minivm.conf
+  notify: restart asterisk service
+
+- name: directories for sip and dialplan includes
+  file:
+    path: /etc/asterisk/{{ item }}
+    state: directory
+    owner: root
+    group: asterisk
+    mode: 0750
+  loop:
+    - sip.d
+    - dialplan.d
+    - context.d
+
+
+- name: configure sip.conf
+  template:
+    src: sip.conf
+    dest: /etc/asterisk/sip.conf
+    backup: yes
+    owner: root
+    group: asterisk
+    mode: 0640
+  notify: restart asterisk service
+
+
+- name: configure extensions.conf
+  template:
+    src: extensions.conf
+    dest: /etc/asterisk/extensions.conf
+    backup: yes
+    owner: root
+    group: asterisk
+    mode: 0640
+  notify: restart asterisk service
+
+- name: configure included dialplan menu
+  template:
+    src: dialplan/menu.conf
+    dest: /etc/asterisk/dialplan.d/menu.conf
+    backup: yes
+  notify: restart asterisk service
+
+- name: configure common dialplan includes
+  template:
+    src: dialplan/{{ item }}.conf
+    dest: /etc/asterisk/dialplan.d/{{ item }}.common.conf
+    backup: yes
+  loop:
+    - macros
+    - services
+  notify: restart asterisk service
+
+
+- name: null sip registrations to workaround include error
+  copy:
+    dest: /etc/asterisk/sip.d/null.register.conf
+    content: |
+      ;; sip.d/null.register.conf
+      ;; ansible-managed
+      ; no registrations
+
+- name: configure sip peers for softphones
+  template:
+    src: softphones-peers.conf
+    dest: /etc/asterisk/sip.d/softphones.peers.conf
+    backup: yes
+  notify: restart asterisk service
+
+- name: configure dialplan extensions for softphones
+  template:
+    src: softphones-dialplan.conf
+    dest: /etc/asterisk/dialplan.d/softphones.rules.conf
+    backup: yes
+  notify: restart asterisk service
+
+- name: enable dialplan contexts for softphones
+  lineinfile:
+    dest: /etc/asterisk/context.d/softphones.conf
+    create: yes
+    line: include => {{ item }}
+  loop:
+    - services
+    - softphones
+  notify: restart asterisk service
+...

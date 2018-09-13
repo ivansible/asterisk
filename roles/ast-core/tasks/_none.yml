@@ -1,0 +1,3 @@
+---
+# this empty task file is included by dependent roles
+# to inherit only defaults (works only in asterisk 2.7+)

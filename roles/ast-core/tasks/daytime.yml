@@ -1,0 +1,41 @@
+---
+- name: directory for extra asterisk sounds
+  file:
+    path: "{{ ast_local_dir }}/sounds"
+    state: directory
+
+- name: download and unpack extra asterisk sounds (wav)
+  unarchive:
+    src: "{{ ast_sounds_extras_wav_url }}"
+    dest: "{{ ast_local_dir }}/sounds"
+    remote_src: yes
+    creates: "{{ ast_local_dir }}/sounds/extras/ru/today.wav"
+    owner: root
+    group: root
+
+# it is important to install format-agnostic asterisk sound packages
+# (and not asterisk-core-sounds-{en,ru}-wav) because they create
+# the en/ru symbolic links under /usr/share/asterisk/sounds,
+# which are required by this task.
+- name: link extra sounds into asterisk sound locations
+  file:
+    state: link
+    src: "{{ ast_local_dir }}/sounds/extras/{{ lang }}"
+    dest: /usr/share/asterisk/sounds/{{ lang }}/extras
+  loop: [ en, ru ]
+  loop_control:
+    loop_var: lang
+
+- name: directory for daytime agi script
+  file:
+    path: "{{ ast_local_dir }}/agi"
+    state: directory
+
+- name: deploy daytime agi script (python3)
+  copy:
+    src: daytime.py
+    dest: "{{ ast_local_dir }}/agi/daytime"
+    owner: root
+    group: asterisk
+    mode: 0750
+...

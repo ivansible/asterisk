@@ -1,0 +1,45 @@
+---
+- name: open asterisk sip port
+  # this step is separate because we want to specify
+  # a list of ip networks given access to the non-tls port
+  ufw:
+    port: 5060
+    rule: allow
+    from: "{{ item }}"
+  loop: "{{ ast_sip_allowed_networks }}"
+
+- name: open asterisk sip-tls port
+  ufw:
+    port: 5061
+    rule: allow
+
+- name: open asterisk rtp ports
+  ufw:
+    port: "{{ ast_rtp_port_start }}:{{ ast_rtp_port_end }}"
+    proto: udp
+    rule: allow
+
+
+- name: close asterisk ami ports
+  ufw:
+    port: "{{ ast_ami_port }}"
+    rule: allow
+    delete: yes
+  loop:
+    - "{{ ast_ami_port }}"
+    - "{{ ast_http_port }}"
+    - "{{ ast_https_port }}"
+
+
+- name: disable annoying sip hackers
+  blockinfile:
+    path: /etc/ufw/before.rules
+    block: |
+      {% for network in ast_reject_networks %}
+      -A ufw-before-input -p udp --dport 5060 -s {{ network }} -j DROP
+      -A ufw-before-input -p tcp --dport 5060:5061 -s {{ network }} -j DROP
+      {% endfor %}
+    insertbefore: "^COMMIT"
+    marker: "# {mark} ANSIBLE reject sip hackers"
+  notify: reload ubuntu firewall
+...

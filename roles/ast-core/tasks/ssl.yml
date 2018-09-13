@@ -1,0 +1,42 @@
+---
+- name: verify that asterisk certificate and key exist
+  file:
+    path: "{{ item }}"
+    state: file
+  loop:
+    - "{{ ast_ssl_cert }}"
+    - "{{ ast_ssl_key }}"
+
+- name: grant asterisk user access to snakeoil ssl certificate
+  user:
+    name: asterisk
+    groups: ssl-cert
+    append: yes
+  notify: restart asterisk service
+  when: "'/ssl-cert/' in ast_ssl_cert"
+
+- name: grant asterisk user access to letsencrypt ssl certificate
+  user:
+    name: asterisk
+    groups: "{{ certbot_group }}"
+    append: yes
+  notify: restart asterisk service
+  when: "'/letsencrypt/' in ast_ssl_cert"
+
+
+# Note:
+# when `rungroup` is set, the asterisk process will have only
+# those access permissions that are associated with that group.
+# when `rungroup` is *not* set, but `runuser` is set, the asterisk
+# process will have access permissions associated with *all*
+# groups where the user participates.
+# this allows to control permissions of the asterisk process
+# more flexibly (e.g. access to ssl certificates).
+- name: disable fixed process group for access to ssl certificates
+  ini_file:
+    dest: /etc/asterisk/asterisk.conf
+    section: options
+    option: rungroup
+    state: absent
+  notify: restart asterisk service
+...

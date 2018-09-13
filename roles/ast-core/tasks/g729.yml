@@ -1,0 +1,99 @@
+---
+- name: directory for codec G729
+  file:
+    path: "{{ ast_local_dir }}/codec-g729"
+    state: directory
+
+- name: download G729 codec module
+  get_url:
+    url: "{{ ast_g729_codec_url }}"
+    dest: "{{ ast_local_dir }}/codec-g729/"
+    mode: 0644
+    force: no
+
+- name: create link alias for chosen G729 codec
+  file:
+    state: link
+    src: "{{ ast_g729_codec_url | basename }}"
+    dest: "{{ ast_local_dir }}/codec-g729/codec_g729.so"
+
+- name: create G729 codec link in the asterisk module directory
+  file:
+    state: link
+    src: "{{ ast_local_dir }}/codec-g729/codec_g729.so"
+    dest: /usr/lib/asterisk/modules/codec_g729.so
+
+
+- name: directory for local asterisk benchmark binaries
+  file:
+    path: "{{ ast_local_dir }}/bin"
+    state: directory
+
+# free g729 benchmark. see:
+# http://asterisk.hosting.lv/
+- block:
+    - name: install free G729 benchmark
+      unarchive:
+        src: "{{ ast_g729_bench_free_tarball_url }}"
+        dest: "{{ ast_local_dir }}"
+        remote_src: yes
+        creates: "{{ ast_local_dir }}/g729-bench-free/run-bench.sh"
+
+    - name: fix permissions on the free benchmark running script
+      file:
+        path: "{{ ast_local_dir }}/g729-bench-free/run-bench.sh"
+        owner: root
+        group: asterisk
+        mode: 0750
+
+    - name: symbolic link for running free benchmark
+      file:
+        state: link
+        src: "../g729-bench-free/run-bench.sh"
+        dest: "{{ ast_local_dir }}/bin/g729-bench-free.sh"
+
+  when: ast_g729_bench_free_tarball_url != ''
+        and ast_g729_bench_enable | bool == true
+  tags: ast_g729_bench
+
+
+# digium g729 benchmark. see:
+# https://www.digium.com/products/software/g729-codec
+# http://downloads.digium.com/pub/telephony/codec_g729/README
+- block:
+
+    - name: install digium G729 benchmark
+      unarchive:
+        src: "{{ ast_g729_bench_digium_tarball_url }}"
+        dest: "{{ ast_local_dir }}"
+        remote_src: yes
+        creates: "{{ ast_local_dir }}/g729-bench-digium/run-bench.sh"
+
+    - name: fix permissions on the digium benchmark running script
+      file:
+        path: "{{ ast_local_dir }}/g729-bench-digium/run-bench.sh"
+        owner: root
+        group: asterisk
+        mode: 0750
+
+    - name: symbolic link for running digium benchmark
+      file:
+        state: link
+        src: "../g729-bench-digium/run-bench.sh"
+        dest: "{{ ast_local_dir }}/bin/g729-bench-digium.sh"
+
+    - name: check whether docker is installed
+      stat:
+        path: /usr/bin/docker
+        get_checksum: no
+      register: docker_binary
+
+    - name: deploy docker required by digium benchmark
+      include_role:
+        name: ivansible.lin_docker
+      when: docker_binary.stat.exists == false
+
+  when: ast_g729_bench_digium_tarball_url != ''
+        and ast_g729_bench_enable | bool == true
+  tags: ast_g729_bench
+...

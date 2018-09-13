@@ -1,0 +1,44 @@
+---
+- name: install core asterisk packages
+  apt:
+    name: "{{ ast_packages_install }}"
+    state: present
+    install_recommends: no
+  tags: ast_packages
+
+
+- name: directory for local asterisk files
+  file:
+    path: "{{ ast_local_dir }}/bin"
+    state: directory
+  tags: ast_sudo
+
+- name: wrapper for asterisk sudo commands
+  copy:
+    dest: /usr/local/asterisk/bin/suexec
+    owner: root
+    group: asterisk
+    mode: 0750
+    content: |
+      #!/bin/bash
+      echo "$(basename $0): '$*'"
+  tags: ast_sudo
+
+- name: let asterisk sudo-run limited commands as root
+  copy:
+    dest: /etc/sudoers.d/99-asterisk
+    owner: root
+    mode: 0440
+    content: |
+      asterisk  ALL=(ALL) NOPASSWD: /usr/local/asterisk/bin/
+  tags: ast_sudo
+
+
+- name: set glibc ipv4/ipv6 preference
+  lineinfile:
+    path: /etc/gai.conf
+    line: "{{ ast_prefer_ipv4 | bool | ternary('','#')}}precedence ::ffff:0:0/96  100"
+    regexp: "^#*precedence *::ffff:0:0/96 *"
+  when: ast_prefer_ipv4 is defined
+  tags: ast_ipv4
+...

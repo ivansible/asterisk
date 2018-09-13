@@ -1,0 +1,41 @@
+---
+# _acl.yml - included task that creates an asterisk acl rule.
+# usage:
+# - include_tasks: acl.yml
+#   vars:
+#     acl: <acl_name>
+#     networks:
+#     - ; comment
+#     - 192.168.0.0/16
+#     - ...
+# note: empty network list means "permit all"
+
+- name: create or update asterisk acl rule "{{ acl }}"
+  copy:
+    dest: /etc/asterisk/acl.d/{{ acl }}.conf
+    owner: root
+    group: asterisk
+    mode: 0644
+    content: |
+      ;; acl.d/{{ acl }}.conf
+      ;; ansible-managed
+      [{{ acl }}]
+      deny = 0.0.0.0/0
+      ;; to permit all networks, uncomment line below and run "reload acl"
+      {% if networks | length > 0 %}
+      ;permit = 0.0.0.0/0
+      {% else %}
+      permit = 0.0.0.0/0
+      {% endif %}
+
+      {% for net_or_comment in networks %}
+      {% if net_or_comment.startswith(';') %}
+      {{ net_or_comment }}
+      {% else %}
+      permit = {{ net_or_comment }}
+      {% endif %}
+      {% endfor %}
+  when: acl is defined and networks is defined
+  become: yes
+  notify: reload asterisk service
+...

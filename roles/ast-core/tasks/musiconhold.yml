@@ -1,0 +1,60 @@
+---
+- name: directory for extra music-on-hold sounds (wav)
+  file:
+    path: "{{ ast_local_dir }}/moh/wav"
+    state: directory
+
+- name: download and unpack music-on-hold extra sounds (mp3)
+  unarchive:
+    src: "{{ ast_moh_mp3_tarball_url }}"
+    dest: "{{ ast_local_dir }}/moh"
+    remote_src: yes
+    creates: "{{ ast_local_dir }}/moh/mp3"
+
+- name: directory for music-on-hold conversion scripts
+  file:
+    path: "{{ ast_local_dir }}/bin"
+    state: directory
+
+- name: deploy music-on-hold mp3-to-wav conversion script
+  copy:
+    dest: "{{ ast_local_dir }}/bin/moh-mp3-to-wav.sh"
+    content: |
+      #!/bin/bash
+      cd "{{ ast_local_dir }}/moh/mp3"
+      mkdir ../wav 2>/dev/null
+      for file in *.mp3; do
+          echo $file
+          sox $file -t wav -r 8000 -c 1 -b 16 -e signed-integer ../wav/${file%.mp3}.wav
+      done
+    owner: root
+    group: asterisk
+    mode: 0750
+
+- name: derive music-on-hold wav file names
+  shell:
+    ls -1 *.mp3 | head -1 | sed -e 's/.mp3$/.wav/'
+  args:
+    chdir: "{{ ast_local_dir }}/moh/mp3"
+  register: moh_wav_filename
+  changed_when: false
+
+- name: run music-on-hold mp3-to-wav conversion script once
+  command:
+    "{{ ast_local_dir }}/bin/moh-mp3-to-wav.sh"
+  args:
+    creates:
+      "{{ ast_local_dir }}/moh/wav/{{ moh_wav_filename.stdout }}"
+
+- name: configure music-on-hold in asterisk
+  copy:
+    dest: /etc/asterisk/musiconhold.conf
+    content: |
+      [default]
+      mode = files
+      directory = {{ ast_local_dir }}/moh/wav
+      ;sort = alpha
+      sort = random
+      digit = 1
+  notify: restart asterisk service
+...

@@ -1,0 +1,145 @@
+---
+- name: create asterisk postgres user
+  postgresql_user:
+    name: "{{ ast_pg_user }}"
+    password: "{{ ast_pg_pass }}"
+
+    login_host: "{{ ast_pg_host }}"
+    port: "{{ ast_pg_port }}"
+    login_user: postgres
+    login_password: "{{ srv_pg_admin_password }}"
+  register: ast_pg_user_result
+
+- name: create asterisk postgres database
+  postgresql_db:
+    name: "{{ ast_pg_dbname }}"
+    state: present
+    owner: "{{ ast_pg_user }}"
+    template: template0
+    encoding: UTF-8
+    lc_collate: en_US.UTF-8
+    lc_ctype: en_US.UTF-8
+
+    login_host: "{{ ast_pg_host }}"
+    port: "{{ ast_pg_port }}"
+    login_user: postgres
+    login_password: "{{ srv_pg_admin_password }}"
+  register: ast_pg_database_result
+
+
+- name: restore asterisk database from backup
+  include_role:
+    name: ivansible.backup_base
+    tasks_from: postgresql_db_restore_encrypted.yml
+  vars:
+    backup_url: "{{ ast_pg_dump_url }}"
+    #backup_secret: use common secret
+    db_name: "{{ ast_pg_dbname }}"
+    login_host: "{{ ast_pg_host }}"
+    db_port: "{{ ast_pg_port }}"
+    login_password: "{{ srv_pg_admin_password }}"
+  when: ast_pg_dump_url != '' and
+        (ast_reset | bool == true
+         or (ast_pg_user_result is changed
+             or ast_pg_database_result is changed))
+
+
+- name: configure asterisk database in unix ODBC
+  blockinfile:
+    path: /etc/odbc.ini
+    create: yes
+    owner: root
+    group: asterisk
+    mode: 0640
+    block: |
+      [asterisk]
+      Description = Asterisk Postgres
+      Driver = PostgreSQL Unicode
+      Servername = {{ ast_pg_host }}
+      Port = {{ ast_pg_port }}
+      Database = {{ ast_pg_dbname }}
+      SSLMode = prefer
+    marker: "; {mark} asterisk (ansible-managed)"
+  # use the following command to test odbc connection:
+  # $ odbcinst -q -d
+  # $ echo "select 1" | isql -v asterisk asterisk {{ast_pg_pass}}
+
+- name: configure asterisk res_odbc module
+  copy:
+    dest: /etc/asterisk/res_odbc.conf
+    owner: root
+    group: asterisk
+    mode: 0640
+    content: |
+      ;; ansible-managed
+      [asterisk]
+      enabled => yes
+      dsn => asterisk
+      username => {{ ast_pg_user }}
+      password => {{ ast_pg_pass }}
+      pre-connect => no
+  notify: restart asterisk service
+
+- name: ensure that res_odbc is preloaded before other modules
+  lineinfile:
+    path: /etc/asterisk/modules.conf
+    line: "preload => res_odbc.so"
+    insertafter: "^autoload *="
+  notify: restart asterisk service
+
+- name: configure func_odbc for testing
+  copy:
+    dest: /etc/asterisk/func_odbc.conf
+    content: |
+      ;; ansible-managed
+      ; ODBC_SQL(select * from cdr)
+      [SQL]
+      dsn=asterisk
+      readsql=${ARG1}
+      ; ODBC_COUNTCDR(2018-09-01)
+      [COUNTCDR]
+      dsn=asterisk
+      readsql=SELECT COUNT(*) FROM cdr WHERE calldate > '${SQL_ESC(${ARG1})}'
+      syntax=<firstdate>
+      synopsis=Count CDRs after specified date
+  notify: restart asterisk service
+
+#
+# how to test database access via func_odbc:
+#
+# extensions.conf:
+# [default]
+# exten => 5,1,Verbose(${ODBC_SQL(select count(*) from cdr)})
+#    same => n,Verbose(${ODBC_COUNTCDR(2008-09-02)})
+#
+# $ rasterisk
+# > dialplan reload
+# > console dial 5
+#
+
+- name: configure cdr_adaptive_odbc module
+  copy:
+    dest: /etc/asterisk/cdr_adaptive_odbc.conf
+    content: |
+      ;; ansible-managed
+      [default]
+      connection=asterisk
+      table=cdr
+      ;schema=public
+      ;usegmtime=yes ; defaults to no
+      ;alias src => source
+      ;alias dst => dest
+      ;filter accountcode => somename
+      ;static "Some Special Value" => identifier_code
+      ;; reload the module after changing this file:
+      ;;   module reload cdr_adaptive_odbc.so
+      ;;   odbc show status
+      ;;   cdr show status
+  notify: restart asterisk service
+
+#
+# how to test cdr in database:
+# make a test call then issue this sql:
+#   select * from cdr order by calldate desc limit 1;
+#
+...

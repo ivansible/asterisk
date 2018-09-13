@@ -1,0 +1,34 @@
+---
+- name: directory for asterisk service drop-in
+  file:
+    path: /etc/systemd/system/asterisk.service.d
+    state: directory
+
+- name: set asterisk cpu quota (if enabled)
+  copy:
+    dest: /etc/systemd/system/asterisk.service.d/cpu_quota.conf
+    content: |
+      [Service]
+      CPUAccounting=yes
+      CPUQuota={{ ast_cpu_quota }}
+  notify:
+    - reload systemd daemon
+    - restart asterisk service
+  when: ast_cpu_quota not in ['', '100%', 'no', false]
+
+- name: remove asterisk cpu quota (if disabled)
+  file:
+    path: /etc/systemd/system/asterisk.service.d/cpu_quota.conf
+    state: absent
+  notify:
+    - reload systemd daemon
+    - restart asterisk service
+  when: ast_cpu_quota in ['', '100%', 'no', false]
+
+
+- name: enable asterisk service
+  systemd:
+    name: asterisk
+    state: started
+    enabled: yes
+...
