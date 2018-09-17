@@ -1,0 +1,23 @@
+---
+dependencies: []
+
+galaxy_info:
+  role_name: asterisk_soho
+  author: "Ivan Andreev"
+  description: "connect home office asterisk with sip phones and sip gateway provider"
+  company: "IvanSible"
+  license: MIT
+  min_ansible_version: 2.5
+
+  platforms:
+    - name: Ubuntu
+      versions:
+        - xenial
+        - bionic
+
+  galaxy_tags:
+    - linux
+    - asterisk
+
+  github_branch: master
+...
