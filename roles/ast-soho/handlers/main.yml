@@ -1,2 +1,6 @@
 ---
 # handlers file for ivansible.asterisk_soho
+
+# inherited from asterisk_base:
+# - restart asterisk service
+# - reload asterisk service

@@ -1,5 +1,66 @@
 ---
-- name: ivansible.asterisk_soho root action 1
-  debug:
-    msg: action 1
+- name: network whitelist for soho gateway provider
+  include_role:
+    name: ivansible.asterisk_core
+    tasks_from: _acl.yml
+  vars:
+    acl: "{{ ast_soho_gateway_alias }}"
+    networks: "{{ ast_soho_gateway_networks }}"
+
+- name: network whitelist for soho sip-phones
+  include_role:
+    name: ivansible.asterisk_core
+    tasks_from: _acl.yml
+  vars:
+    acl: "{{ ast_soho_phones_alias }}"
+    networks: "{{ ast_soho_phones_networks }}"
+
+
+- name: sip peers for soho gateway
+  template:
+    src: gateway-peers.conf
+    dest: /etc/asterisk/sip.d/{{ ast_soho_gateway_alias }}.peers.conf
+    owner: root
+    group: asterisk
+    mode: 0640
+  notify: reload asterisk service
+
+- name: sip peers for soho phones
+  template:
+    src: phones-peers.conf
+    dest: /etc/asterisk/sip.d/{{ ast_soho_phones_alias }}.peers.conf
+    owner: root
+    group: asterisk
+    mode: 0640
+  notify: reload asterisk service
+
+
+- name: dialplan rules for soho gateway and phones
+  template:
+    src: soho-dialplan.conf
+    dest: /etc/asterisk/dialplan.d/{{ ast_soho_gateway_alias }}.rules.conf
+  notify: reload asterisk service
+
+
+- name: enable dialplan contexts for soho phones
+  lineinfile:
+    dest: /etc/asterisk/context.d/{{ ast_soho_phones_alias }}.conf
+    create: yes
+    line: include => {{ item }}
+  loop:
+    - "{{ ast_soho_phones_alias }}"
+    - "{{ ast_soho_gateway_alias }}-services"
+    - softphones
+    - services
+  notify: reload asterisk service
+
+- name: enable soho dialplan contexts for softphones
+  lineinfile:
+    dest: /etc/asterisk/context.d/softphones.conf
+    create: yes
+    line: include => {{ item }}
+  loop:
+    - "{{ ast_soho_phones_alias }}"
+    - "{{ ast_soho_gateway_alias }}-services"
+  notify: reload asterisk service
 ...

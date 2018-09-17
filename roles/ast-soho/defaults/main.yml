@@ -1,4 +1,55 @@
 ---
 # defaults file for ivansible.asterisk_soho
 
+# inherited from asterisk_base:
+#   ast_reset
+#   ast_experimental
+#   ast_default_language
+#   ast_default_codecs
+#   ast_qualify_value
+#   ast_dialplan_hints
+#   ast_local_dir
+
+
+ast_soho_gateway_alias: gateway
+ast_soho_phones_alias: phones
+
+ast_soho_gateway_codecs: g729,g722,ulaw,alaw
+ast_soho_phones_codecs: g729,g722,ulaw,alaw
+
+
+ast_soho_gateway_accounts:
+  # note: gateway should provide account name when calls us back
+  - name: account1
+    username: 42115
+    password: secret
+
+ast_soho_gateway_hosts:
+  # the first one is used for outward calls
+  - sip.example.com
+
+# empty string or extension like "*100#"
+ast_soho_gateway_billing_exten: ""
+
+ast_soho_phones:
+  - name: phone1
+    password: secret
+    exten: 101
+    gateway: account1
+    active: yes
+
+
+# calls to quick numbers will be placed through the first gateway account
+ast_soho_quick_numbers:
+  - name: my close friend
+    exten: 111
+    number: +1-212-123-4567
+
+
+ast_soho_gateway_networks:
+  - 192.168.0.0/16
+
+ast_soho_phones_networks:
+  - ; My Local Network
+  - 192.168.0.0/16
 ...

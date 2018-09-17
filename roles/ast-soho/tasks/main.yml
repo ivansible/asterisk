@@ -7,4 +7,7 @@
 - name: become root
   import_tasks: root.yml
   become: yes
+  tags: ast_soho_all
+
+- meta: flush_handlers
 ...
