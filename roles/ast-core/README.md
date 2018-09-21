@@ -151,6 +151,10 @@ Completely reject requests to SIP and TLS ports from IPs on these networks.
 Default is none. Set this if you are attacked by SIP hackers.
 Each network is defined in format like `172.12.0.0/17`.
 
+The iptables rules will be placed directly in the ufw file
+`/etc/ufw/before.rules` in the block `ANSIBLE reject sip hackers`
+destined for the chain `ufw-before-input`.
+
     ast_prefer_ipv4: no
 If `yes`, GLIBC DNS resolver is configured to prefer IPV4.
 If `no`, GLIBC resolver will return addresses as received (no preference).
@@ -332,6 +336,11 @@ Roles can put utility dialplan snippets in files `dialplan.d/<rolename>.common.c
 and rule groups and contexts in the files `dialplan.d/<rolename>.rules.conf`.
 These files are `#include`d in the filename alphanumeric order.
 
+This role adds some convenient dialplan services available from softphones:
+  - current time service (extension `100`);
+  - voice recording service (extension `97`);
+See details in the file `dialplan.d/services.common.conf`.
+
 This role also provides some common macros and subroutines in the file
 `dialplan.d/macros.common.conf` in the `[sub]` global context.
 Dialplan subroutines `phone` and `provider` should be used as:
@@ -339,6 +348,9 @@ Dialplan subroutines `phone` and `provider` should be used as:
     Gosub(sub,phone,1,(<phone_peer_name_without_sip_prefix>))
     Gosub(sub,provider,1,(<provider_peer_name_without_sip_prefix>,<provider_extension>))
 ```
+
+For security, only the characters `0123456789*#` (see global variable `SAFECHARS`)
+are allowed in a `Dial` extension. All other characters are filtered out.
 
 
 ### Auto-attendant Menus
