@@ -1,5 +1,9 @@
 ---
-dependencies: []
+dependencies:
+  - ivansible.asterisk_base  # for common asterisk defaults and handlers
+  # this and other roles really depend on asterisk_core, but inclusion
+  # should be done explicitly in playbook to avoid repetitive execution.
+  #- ivansible.asterisk_core
 
 galaxy_info:
   role_name: asterisk_providers
@@ -17,7 +21,7 @@ galaxy_info:
 
   galaxy_tags:
     - linux
-    - ansible
+    - asterisk
 
   github_branch: master
 ...

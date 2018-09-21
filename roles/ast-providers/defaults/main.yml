@@ -1,4 +1,20 @@
 ---
 # defaults file for ivansible.asterisk_providers
 
+ast_providers:
+  - name: provider1
+    exten: 5
+    host: sip.provider1.com
+    domain: 195.168.1.5  # default: same as host
+    username: 12345
+    password: secret123
+    transport: tcp       # default: udp,tcp
+    networks:
+      - 172.16.0.0/17    # ip network
+      - 192.168.1.5/32   # ip host
+      - 0.0.0.0/0        # all
+    codecs: g729,ulaw,alaw  # default: ast_default_codecs
+    language: en         # default: ast_default_language
+    prepend: "0"         # default: none
+    active: no
 ...

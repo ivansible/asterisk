@@ -1,5 +1,52 @@
 ---
-- name: ivansible.asterisk_providers root action 1
-  debug:
-    msg: action 1
+- name: network whitelist for asterisk providers
+  include_role:
+    name: ivansible.asterisk_core
+    tasks_from: _acl.yml
+  vars:
+    acl: "{{ provider.name }}"
+    networks: "{{ provider.networks }}"
+  when: provider.networks is defined
+        and provider.networks | length > 0
+  loop: "{{ ast_providers | json_query('[?!!active]') }}"
+  loop_control:
+    loop_var: provider
+
+
+- name: sip peers for asterisk providers
+  template:
+    src: providers-peers.conf
+    dest: /etc/asterisk/sip.d/providers.peers.conf
+    owner: root
+    group: asterisk
+    mode: 0640
+  notify: reload asterisk service
+
+- name: dialplan rules for asterisk providers
+  template:
+    src: providers-dialplan.conf
+    dest: /etc/asterisk/dialplan.d/providers.rules.conf
+  notify: reload asterisk service
+
+
+- name: enable other contexts for inward calls from providers
+  lineinfile:
+    path: /etc/asterisk/context.d/providers.conf
+    create: yes
+    line: include => {{ item }}
+  loop:
+    - softphones
+    - "{{ ast_soho_phones_alias }}"
+    - services  # optional
+  notify: reload asterisk service
+
+- name: enable outward providers calls for other contexts
+  lineinfile:
+    path: /etc/asterisk/context.d/{{ item }}.conf
+    create: yes
+    line: include => providers-out
+  loop:
+    - softphones
+    - "{{ ast_soho_phones_alias }}"
+  notify: reload asterisk service
 ...
