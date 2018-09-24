@@ -23,6 +23,7 @@ ast_soho_gateway_accounts:
   - name: account1
     username: 42115
     password: secret
+    active: no
 
 ast_soho_gateway_hosts:
   # the first one is used for outward calls
@@ -36,7 +37,7 @@ ast_soho_phones:
     password: secret
     exten: 101
     gateway: account1
-    active: yes
+    active: no
 
 
 # calls to quick numbers will be placed through the first gateway account

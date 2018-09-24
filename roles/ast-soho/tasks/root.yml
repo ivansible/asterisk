@@ -44,7 +44,7 @@
 
 - name: enable dialplan contexts for soho phones
   lineinfile:
-    dest: /etc/asterisk/context.d/{{ ast_soho_phones_alias }}.conf
+    path: /etc/asterisk/context.d/{{ ast_soho_phones_alias }}.conf
     create: yes
     line: include => {{ item }}
   loop:
@@ -56,7 +56,7 @@
 
 - name: enable soho dialplan contexts for softphones
   lineinfile:
-    dest: /etc/asterisk/context.d/softphones.conf
+    path: /etc/asterisk/context.d/softphones.conf
     create: yes
     line: include => {{ item }}
   loop:

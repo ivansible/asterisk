@@ -45,14 +45,16 @@ will be configured in Asterisk from this white list of IP networks.
       - name: gw-account1
         username: 4215
         password: secret1
+        active: yes
       - name: gw-account2
         username: 4216
         password: secret2
+        active: no
 A list of account credentials for placing outgoing calls through provider.
 Each account can be connected with a few phones in the `ast_soho_phones`
 list. Outgoing calls from a phone will placed via the connected account.
 Incoming calls from provider account will ring all connected phones until
-one of them answers.
+one of them answers. Only active accounts will be configured.
 
 For security reasons, you should go to the provider website and limit
 accepted IPs for these accounts by the IP address of your Asterisk host.
@@ -114,7 +116,7 @@ with a phone on extension `123`.
         number: +1-212-123-4567
 
 Also you can add a few short numbers to the dialplan. Please note that
-calls to quick numbers will be placed through the first gateway account.
+calls to quick numbers will be placed through the first active gateway account.
 
 
 ## Dialplan Notes
