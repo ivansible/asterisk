@@ -75,6 +75,13 @@ The first domain is default and used for outgoing calls.
     ast_local_dir: /usr/local/asterisk
 These variables are inherited from the `asterisk_base` role.
 
+    ast_pg_host: localhost
+    ast_pg_port: 5432
+    ast_pg_dbname: asterisk
+    ast_pg_user: asterisk
+    ast_pg_pass: secret
+Database connection parameters.
+
 
 ## Role Variables
 
@@ -115,13 +122,6 @@ Default voicemail password.
     ast_record_file: /tmp/asterisk-record.wav
 Location where voice recording service (extension 97)
 will save recorded sound.
-
-    ast_pg_host: localhost
-    ast_pg_port: 5432
-    ast_pg_dbname: asterisk
-    ast_pg_user: asterisk
-    ast_pg_pass: secret
-Database connection parameters.
 
     ast_pg_dump_url: ""
 If this is not empty, the role will reset database from given dump.

@@ -11,6 +11,11 @@
 #   ast_default_codecs
 #   ast_qualify_value
 #   ast_dialplan_hints
+#   ast_pg_host
+#   ast_pg_port
+#   ast_pg_dbname
+#   ast_pg_user
+#   ast_pg_pass
 #   ast_local_dir
 
 
@@ -39,13 +44,7 @@ ast_voicemail_pass: 1234
 ast_record_file: /tmp/asterisk-record.wav
 
 
-ast_pg_host: localhost
-ast_pg_port: 5432
-ast_pg_dbname: asterisk
-ast_pg_user: asterisk
-ast_pg_pass: secret
 ast_pg_dump_url: ""
-
 
 ast_moh_mp3_tarball_url: https://www.dropbox.com/s/25ue131u8owpir1/moh-extras-mp3.tar.gz?dl=1
 

@@ -90,7 +90,7 @@
 
 - name: enable dialplan contexts for softphones
   lineinfile:
-    dest: /etc/asterisk/context.d/softphones.conf
+    path: /etc/asterisk/context.d/softphones.conf
     create: yes
     line: include => {{ item }}
   loop:
