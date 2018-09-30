@@ -1,16 +1,11 @@
 ---
 # handlers file for ivansible.asterisk_core
 
+# inherited from lin_base:
+# - reload systemd daemon
+# - reload ubuntu firewall
+
 # inherited from asterisk_base:
 # - restart asterisk service
 # - reload asterisk service
-
-- name: reload systemd daemon
-  systemd:
-    daemon_reload: yes
-  become: yes
-
-- name: reload ubuntu firewall
-  command: ufw reload
-  become: yes
 ...

@@ -289,6 +289,10 @@ List of inherited handlers:
   - restart asterisk service
   - reload asterisk service  (not used)
 
+This role also inherits the following handlers from `ivansible.lin_base`:
+  - reload systemd daemon
+  - reload ubuntu firewall
+
 The following roles are imported directly from tasks:
   - ivansible.lin_docker  (installs docker for digium G729 benchmark)
   - ivansible.dev_user    (prepares local bash rc file)
