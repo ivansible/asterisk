@@ -327,7 +327,7 @@ ast_stun_addr: ""
 
 # we do not step-sync time by default to save some playbook time
 # if you think syncing is important, set time server to:
-# pool.ntp.org
+# 2.pool.ntp.org
 ast_ntp_server: ""
 
 # cpu quota examples: 5% 60% 100% no

@@ -174,7 +174,7 @@ If the string is empty, STUN and ICE will be disabled.
     ast_ntp_server: ""
 If not empty, installation will step-sync host time to the given NTP server.
 By default we do not do this to save some playbook time.
-If syncing is important, set time server to somthing like `pool.ntp.org`.
+If syncing is important, set time server to something like `2.pool.ntp.org`.
 
     ast_cpu_quota: no
 CPU quota.
