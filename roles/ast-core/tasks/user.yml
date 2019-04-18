@@ -13,10 +13,11 @@
 
 - name: alias for running asterisk console
   lineinfile:
-    path: ~/.bashrc.local
-    create: yes
+    # alias file must correspond with role ivansible.dev_user
+    # https://github.com/ivansible/dev-user/blob/master/tasks/bashrc.yml
+    path: ~/.local/bashrc/4alias.sh
     line: "alias astcli='setterm -linewrap off ; sudo asterisk -r ; setterm -linewrap on'"
     regexp: "^alias astcli *="
-    insertbefore: "^# --- user settings ---"
+    insertafter: "^# END ANSIBLE"
   become: no
 ...
