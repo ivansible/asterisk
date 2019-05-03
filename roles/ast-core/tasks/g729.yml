@@ -53,7 +53,7 @@
         dest: "{{ ast_local_dir }}/bin/g729-bench-free.sh"
 
   when: ast_g729_bench_free_tarball_url != ''
-        and ast_g729_bench_enable | bool == true
+        and ast_g729_bench_enable |bool
   tags: ast_g729_bench
 
 
@@ -91,9 +91,9 @@
     - name: deploy docker required by digium benchmark
       include_role:
         name: ivansible.lin_docker
-      when: docker_binary.stat.exists == false
+      when: not docker_binary.stat.exists
 
   when: ast_g729_bench_digium_tarball_url != ''
-        and ast_g729_bench_enable | bool == true
+        and ast_g729_bench_enable |bool
   tags: ast_g729_bench
 ...

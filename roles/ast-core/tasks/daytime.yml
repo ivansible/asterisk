@@ -22,7 +22,7 @@
     state: link
     src: "{{ ast_local_dir }}/sounds/extras/{{ lang }}"
     dest: /usr/share/asterisk/sounds/{{ lang }}/extras
-  loop: [ en, ru ]
+  loop: [en, ru]
   loop_control:
     loop_var: lang
 

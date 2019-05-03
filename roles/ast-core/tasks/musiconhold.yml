@@ -32,19 +32,19 @@
     mode: 0750
 
 - name: derive music-on-hold wav file names
-  shell:
+  shell: |
+    set -eo pipefail
     ls -1 *.mp3 | head -1 | sed -e 's/.mp3$/.wav/'
   args:
+    executable: /bin/bash
     chdir: "{{ ast_local_dir }}/moh/mp3"
   register: moh_wav_filename
   changed_when: false
 
 - name: run music-on-hold mp3-to-wav conversion script once
   command:
-    "{{ ast_local_dir }}/bin/moh-mp3-to-wav.sh"
-  args:
-    creates:
-      "{{ ast_local_dir }}/moh/wav/{{ moh_wav_filename.stdout }}"
+    cmd: "{{ ast_local_dir }}/bin/moh-mp3-to-wav.sh"
+    creates: "{{ ast_local_dir }}/moh/wav/{{ moh_wav_filename.stdout }}"
 
 - name: configure music-on-hold in asterisk
   copy:

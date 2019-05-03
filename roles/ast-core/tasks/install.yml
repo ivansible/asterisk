@@ -37,7 +37,7 @@
 - name: set glibc ipv4/ipv6 preference
   lineinfile:
     path: /etc/gai.conf
-    line: "{{ ast_prefer_ipv4 | bool | ternary('','#')}}precedence ::ffff:0:0/96  100"
+    line: "{{ ast_prefer_ipv4 |bool |ternary('','#') }}precedence ::ffff:0:0/96  100"
     regexp: "^#*precedence *::ffff:0:0/96 *"
   when: ast_prefer_ipv4 is defined
   tags: ast_ipv4

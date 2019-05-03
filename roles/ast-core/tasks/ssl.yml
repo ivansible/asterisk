@@ -7,7 +7,7 @@
     - "{{ ast_ssl_cert }}"
     - "{{ ast_ssl_key }}"
 
-- name: grant asterisk user access to snakeoil ssl certificate
+- name: grant asterisk user with access to ssl private key
   user:
     name: asterisk
     groups: ssl-cert

@@ -1,8 +1,7 @@
 ---
 - name: backup vanilla asterisk config
   command:
-    cp -a /etc/asterisk /etc/asterisk.orig
-  args:
+    cmd: cp -a /etc/asterisk /etc/asterisk.orig
     creates: /etc/asterisk.orig
 
 - name: reset asterisk config from backup
@@ -11,7 +10,7 @@
     dest: /etc/asterisk/
     delete: yes
   delegate_to: "{{ inventory_hostname }}"
-  when: ast_reset | bool == true
+  when: ast_reset |bool
   notify: restart asterisk service
 
 

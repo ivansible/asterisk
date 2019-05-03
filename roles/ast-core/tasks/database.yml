@@ -39,7 +39,7 @@
     db_port: "{{ ast_pg_port }}"
     login_password: "{{ srv_pg_admin_password }}"
   when: ast_pg_dump_url != '' and
-        (ast_reset | bool == true
+        (ast_reset |bool
          or (ast_pg_user_result is changed
              or ast_pg_database_result is changed))
 
@@ -60,9 +60,9 @@
       Database = {{ ast_pg_dbname }}
       SSLMode = prefer
     marker: "; {mark} asterisk (ansible-managed)"
-  # use the following command to test odbc connection:
-  # $ odbcinst -q -d
-  # $ echo "select 1" | isql -v asterisk asterisk {{ast_pg_pass}}
+    # use the following command to test odbc connection:
+    # $ odbcinst -q -d
+    # $ echo "select 1" | isql -v asterisk asterisk {{ast_pg_pass}}
 
 - name: configure asterisk res_odbc module
   copy:

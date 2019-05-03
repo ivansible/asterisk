@@ -28,11 +28,11 @@ ast_default_nat: yes
 
 
 ast_softphones: []
-  #- name: softphone1
-  #  password: secretpass1
-  #  exten: 101
-  #  srtp: no
-  #  active: yes
+# - name: softphone1
+#   password: secretpass1
+#   exten: 101
+#   srtp: no
+#   active: yes
 
 ast_softphones_secure: yes
 
@@ -311,7 +311,7 @@ ast_sip_allowed_networks:
   - any
 
 ast_reject_networks: []
-  #-192.168.77.1/32
+# -192.168.77.1/32
 
 # yes = prefer ipv4
 # no  = do not prefer ipv4
