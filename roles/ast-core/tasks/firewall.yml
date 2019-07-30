@@ -6,18 +6,21 @@
     port: 5060
     rule: allow
     from: "{{ item }}"
+  no_log: true
   loop: "{{ ast_sip_allowed_networks }}"
 
 - name: open asterisk sip-tls port
   ufw:
     port: 5061
     rule: allow
+  no_log: true
 
 - name: open asterisk rtp ports
   ufw:
     port: "{{ ast_rtp_port_start }}:{{ ast_rtp_port_end }}"
     proto: udp
     rule: allow
+  no_log: true
 
 
 - name: close asterisk ami ports
@@ -25,6 +28,7 @@
     port: "{{ ast_ami_port }}"
     rule: allow
     delete: yes
+  no_log: true
   loop:
     - "{{ ast_ami_port }}"
     - "{{ ast_http_port }}"
