@@ -10,19 +10,23 @@
 - name: grant asterisk user with access to ssl private key
   user:
     name: asterisk
-    groups: ssl-cert
+    groups: "{{ certbot_group |default('ssl-cert') }}"
     append: yes
   notify: restart asterisk service
-  when: "'/ssl-cert/' in ast_ssl_cert"
 
-- name: grant asterisk user access to letsencrypt ssl certificate
-  user:
-    name: asterisk
-    groups: "{{ certbot_group }}"
-    append: yes
-  notify: restart asterisk service
-  when: "'/letsencrypt/' in ast_ssl_cert"
+- name: ensure that ssl key file is readable by asterisk, not by world
+  file:
+    path: "{{ ast_ssl_key }}"
+    state: file
+    group: "{{ certbot_group |default('ssl-cert') }}"
+    mode: "o="
 
+- name: ensure that asterisk can accces private key directory
+  file:
+    path: "{{ ast_ssl_key |dirname }}"
+    state: directory
+    group: "{{ certbot_group |default('ssl-cert') }}"
+    mode: g+rx
 
 # Note:
 # when `rungroup` is set, the asterisk process will have only
