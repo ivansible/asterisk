@@ -19,12 +19,13 @@
 #   ast_local_dir
 
 
-ast_ip_list: "{{ ansible_all_ipv4_addresses
-               | reject('match', '^10[.]')
-               | reject('match', '^172[.]1[0-9][.]')
-               | list }}"
+ast_ip_list_cleared: "{{ ansible_all_ipv4_addresses
+                       | reject('match', '^10[.]')
+                       | reject('match', '^172[.]1[0-9][.]')
+                       | list }}"
+ast_ip_list: "{{ ast_ip_list_cleared or ansible_all_ipv4_addresses }}"
 
-ast_default_nat: yes
+ast_default_nat: yes  # not used?
 
 ast_time_sync_enable: yes
 

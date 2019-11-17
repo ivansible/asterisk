@@ -124,7 +124,7 @@
     section: "{{ item.0.section }}"
     option: "{{ item.1.keys() | first }}"
     value: "{{ item.1.values() | first }}"
-  #no_log: "{{ hide_secrets | bool }}"
+  #no_log: "{{ hide_secrets |bool }}"
   with_subelements:
     - "{{ ast_params_default
         + ast_params_group
