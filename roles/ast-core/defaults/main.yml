@@ -26,6 +26,8 @@ ast_ip_list: "{{ ansible_all_ipv4_addresses
 
 ast_default_nat: yes
 
+ast_time_sync_enable: yes
+
 
 ast_softphones: []
 # - name: softphone1

@@ -44,11 +44,13 @@
 
 - import_tasks: firewall.yml
   become: yes
+  when: lin_use_firewall |bool
   tags: ast_firewall
 
 # asterisk rtp stream bridging requires precise local time
 - import_tasks: timesync.yml
   become: yes
+  when: ast_time_sync_enable |bool
   tags: ast_timesync
 
 - import_tasks: user.yml
