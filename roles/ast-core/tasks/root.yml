@@ -1,0 +1,40 @@
+---
+- import_tasks: install.yml
+  tags: ast_install
+
+- import_tasks: ssl.yml
+  tags: ast_ssl
+
+- import_tasks: g729.yml
+  tags: ast_g729
+
+- import_tasks: config.yml
+  tags: ast_config
+
+- import_tasks: musiconhold.yml
+  tags: ast_moh
+
+# AGI script speaking current time in ru/en
+- import_tasks: daytime.yml
+  tags: ast_daytime
+
+- import_tasks: database.yml
+  tags: ast_database
+
+- import_tasks: dialplan.yml
+  tags: ast_dialplan
+
+- import_tasks: systemd.yml
+  tags:
+    - ast_systemd
+    - ast_cpu_quota
+
+- import_tasks: firewall.yml
+  when: lin_use_firewall |bool
+  tags: ast_firewall
+
+# asterisk rtp stream bridging requires precise local time
+- import_tasks: timesync.yml
+  when: ast_time_sync_enable |bool
+  tags: ast_timesync
+...

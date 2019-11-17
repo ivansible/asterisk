@@ -3,59 +3,19 @@
   setup:
   become: no
 
-- import_tasks: install.yml
-  become: yes
-  tags: ast_install
-
-- import_tasks: ssl.yml
-  become: yes
-  tags: ast_ssl
-
-- import_tasks: g729.yml
-  become: yes
-  tags: ast_g729
-
-- import_tasks: config.yml
-  become: yes
-  tags: ast_config
-
-- import_tasks: musiconhold.yml
-  become: yes
-  tags: ast_moh
-
-# AGI script speaking current time in ru/en
-- import_tasks: daytime.yml
-  become: yes
-  tags: ast_daytime
-
-- import_tasks: database.yml
-  become: yes
-  tags: ast_database
-
-- import_tasks: dialplan.yml
-  become: yes
-  tags: ast_dialplan
-
-- import_tasks: systemd.yml
-  become: yes
+- name: most asterisk tasks require privileged access
+  import_tasks: root.yml
+  become: true
   tags:
-    - ast_systemd
-    - ast_cpu_quota
+    - ast_core_all
 
-- import_tasks: firewall.yml
-  become: yes
-  when: lin_use_firewall |bool
-  tags: ast_firewall
+- name: non-root asterisk tasks
+  import_tasks: user.yml
+  become: false
+  tags:
+    - ast_user
+    - ast_core_all
 
-# asterisk rtp stream bridging requires precise local time
-- import_tasks: timesync.yml
-  become: yes
-  when: ast_time_sync_enable |bool
-  tags: ast_timesync
-
-- import_tasks: user.yml
-  become: no
-  tags: ast_user
-
-- meta: flush_handlers
+- name: flush handlers
+  meta: flush_handlers
 ...
