@@ -61,7 +61,6 @@
 # https://www.digium.com/products/software/g729-codec
 # http://downloads.digium.com/pub/telephony/codec_g729/README
 - block:
-
     - name: install digium G729 benchmark
       unarchive:
         src: "{{ ast_g729_bench_digium_tarball_url }}"
@@ -86,12 +85,13 @@
       stat:
         path: /usr/bin/docker
         get_checksum: no
-      register: docker_binary
+      register: _docker_binary
 
     - name: deploy docker required by digium benchmark
       include_role:
         name: ivansible.lin_docker
-      when: not docker_binary.stat.exists
+      when: not _docker_binary.stat.exists
+            and lin_use_docker |bool
 
   when: ast_g729_bench_digium_tarball_url != ''
         and ast_g729_bench_enable |bool
