@@ -1,4 +1,21 @@
 ---
 # defaults file for ivansible.asterisk_billing
 
+ast_billing_dir: "{{ ansible_user_dir }}/devel/asterisk-billing"
+
+ast_billing_options:
+  - section: dialer
+    option: log_file
+    value: /var/log/asterisk/dialer.log
+  - section: dialer
+    option: db_host
+    value: "{{ ast_pg_host }}"
+  - section: dialer
+    option: db_port
+    value: "{{ ast_pg_port }}"
+
+ast_billing_secrets:
+  - name: pgsql
+    username: "{{ ast_pg_user }}"
+    password: "{{ ast_pg_pass }}"
 ...

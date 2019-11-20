@@ -1,10 +1,158 @@
 ---
-# perform setup as a non-root user
-- setup:
-  become: no
+- name: install billing library
+  block:
+    - name: create directory for billing code
+      file:
+        path: "{{ ast_billing_dir }}"
+        state: directory
+      become: no
 
-# use import to become root globally
-- name: become root
-  import_tasks: root.yml
+    - name: enable public key for gitlab.com
+      import_role:
+        name: ivansible.dev_user
+        tasks_from: known-hosts.yml
+      vars:
+        dev_user_known_host_list:
+          - gitlab.com
+      become: yes
+
+    - name: checkout billing code
+      git:
+        repo: git@gitlab.com:ivandeex/asterisk-billing.git
+        version: master
+        dest: "{{ ast_billing_dir }}"
+        # only clone, don't choke on pending modifications
+        update: no
+        # key file not needed because we forward ssh agent
+        #key_file: ~/.ssh/git_repo.key
+      become: no
+
+    - name: install xenial/bionic packages for billing
+      apt:
+        name:
+          - python
+          - build-essential
+          - libcurl4-openssl-dev
+          - libssl-dev
+          #- libpython-dev
+          #- postgresql-server-dev-10
+          #- libxml2-dev
+          #- libxslt1-dev
+      become: yes
+
+    - name: install bionic-only packages for billing
+      apt:
+        name:
+          - libpython-dev
+      when: ansible_lsb.codename == 'bionic'
+      become: yes
+
+    - name: install python dependencies for billing
+      pip:
+        virtualenv: "{{ ast_billing_dir }}/venv"
+        virtualenv_python: python2
+        requirements: "{{ ast_billing_dir }}/requirements.txt"
+      become: no
+  # end of block
+  tags: ast_billing_all
+
+
+- name: configure billing library
+  block:
+    - name: create initial options.ini for billing
+      command:
+        argv:
+          - cp
+          - -a
+          - "{{ ast_billing_dir }}/etc/options.ini-sample"
+          - "{{ ast_billing_dir }}/etc/options.ini"
+        creates:
+          "{{ ast_billing_dir }}/etc/options.ini"
+      become: no
+
+    - name: tweak billing options
+      ini_file:
+        dest: "{{ ast_billing_dir }}/etc/options.ini"
+        section: "{{ opt.section }}"
+        option: "{{ opt.option }}"
+        value: "{{ opt.value }}"
+        owner: "{{ ansible_user_id }}"
+        group: asterisk
+        mode: 0644
+      loop: "{{ ast_billing_options }}"
+      loop_control:
+        loop_var: opt
+        label: "{{ opt.section }}/{{ opt.option }}"
+      #no_log: "{{ hide_secrets |bool }}"
+      become: yes
+
+    - name: configure billing library secrets
+      copy:
+        dest: "{{ ast_billing_dir }}/etc/secrets.psv"
+        content: |
+          {%- for peer in ast_billing_secrets -%}
+          {{ peer.name }} | {{ peer.username }} | {{ peer.password }}
+          {% endfor %}
+        owner: "{{ ansible_user_id }}"
+        group: asterisk
+        mode: 0640
+        force: no
+      become: yes
+  # end of block
+  tags: ast_billing_all
+
+
+- name: configure asterisk for billing
+  block:
+    - name: fix permissions on asterisk log directory
+      file:
+        path: /var/log/asterisk
+        owner: asterisk
+        group: asterisk
+        mode: 0775
+
+    - name: create asterisk agi executables for billing
+      copy:
+        dest: "{{ ast_local_dir }}/agi/billing-dialer"
+        content: |
+          #!{{ ast_billing_dir }}/venv/bin/python
+          # ansible-managed
+          import sys
+          sys.path.insert(0, "{{ ast_billing_dir }}/lib")
+          from pycall import dialer  # NOQA
+          dialer.main()
+        owner: root
+        group: asterisk
+        mode: 0755
+
+    - name: create dialplan rules for billing
+      copy:
+        dest: /etc/asterisk/dialplan.d/billing.rules.conf
+        content: |
+          ;; dialplan.d/billing.rules.conf
+          ;; ansible-managed
+
+          [billing-services]
+          exten => _0*ZX.,1,Verbose(2, Invoke billing dialer)
+              same => n,Answer()
+              same => n,AGI({{ ast_local_dir }}/agi/billing-dialer,call,${EXTEN:2})
+              same => n,AGI({{ ast_local_dir }}/agi/billing-dialer,close)
+              same => n,Goto(endcall,1)
+
+          ;; ========
+      notify: reload asterisk service
+
+    - name: enable billing dialplan rules for other contexts
+      lineinfile:
+        path: /etc/asterisk/context.d/{{ item }}.conf
+        create: yes
+        line: include => billing-services
+      when: item != ''
+      loop:
+        - softphones
+        - "{{ ast_soho_phones_alias | default('') }}"
+      notify: reload asterisk service
+  # end of block
   become: yes
+  tags: ast_billing_all
 ...
