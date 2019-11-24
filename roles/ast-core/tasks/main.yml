@@ -12,6 +12,6 @@
     - ast_user
     - ast_core_all
 
-- name: flush handlers
+- name: flush handlers - restart asterisk etc
   meta: flush_handlers
 ...

@@ -3,13 +3,24 @@
   user:
     name: "{{ ansible_user_id }}"
     groups: asterisk
-    append: yes
-  become: yes
+    append: true
+  become: true
+
+- name: check whether bash alias file already exists
+  stat:
+    path: ~/.local/bashrc/4alias.sh
+  register: stat_bash_alias
 
 - name: common bashrc customizations
-  import_role:
+  include_role:
     name: ivansible.dev_user
     tasks_from: bashrc.yml
+    apply:
+      tags:
+        - ast_user
+        - ast_core_all
+      become: false
+  when: not stat_bash_alias.stat.exists
 
 - name: alias for running asterisk console
   lineinfile:
@@ -19,5 +30,5 @@
     line: "alias astcli='setterm -linewrap off ; sudo asterisk -r ; setterm -linewrap on'"
     regexp: "^alias astcli *="
     insertafter: "^# END ANSIBLE"
-  become: no
+  become: false
 ...
