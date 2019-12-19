@@ -15,6 +15,7 @@ The role will:
   - optionally limit CPU quota for asterisk service;
   - open SIP, TLS, RTP in linux firewall;
   - configure local AMI over TCP/HTTP, but block AMI ports from remote access;
+  - configure syslog and log rotation;
   - enable NTP synchronization and step-sync host time;
   - give ansible remote user access to asterisk.
 
