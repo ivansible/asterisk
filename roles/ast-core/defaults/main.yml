@@ -1,7 +1,7 @@
 ---
-# defaults file for ivansible.asterisk_core
+# defaults file for ivansible.ast_core
 
-# inherited from asterisk_base:
+# inherited from role ast_base:
 #   ast_reset
 #   ast_experimental
 #   ast_ssl_cert
@@ -25,9 +25,9 @@ ast_ip_list_cleared: "{{ ansible_all_ipv4_addresses
                        | list }}"
 ast_ip_list: "{{ ast_ip_list_cleared or ansible_all_ipv4_addresses }}"
 
-ast_default_nat: yes  # not used?
+ast_default_nat: true  # not used?
 
-ast_time_sync_enable: yes
+ast_time_sync_enable: true
 
 
 ast_softphones: []
@@ -37,7 +37,7 @@ ast_softphones: []
 #   srtp: no
 #   active: yes
 
-ast_softphones_secure: yes
+ast_softphones_secure: true
 
 
 ast_user_agent: Asterisk PBX 13.18
@@ -58,7 +58,7 @@ ast_sounds_extras_wav_url: https://www.dropbox.com/s/t5i3lxzptnaqetl/sounds-extr
 ast_g729_codec_type: ast130-gcc4-glibc2.2-x86_64-barcelona
 ast_g729_codec_url: http://asterisk.hosting.lv/bin/codec_g729-{{ ast_g729_codec_type }}.so
 
-ast_g729_bench_enable: no
+ast_g729_bench_enable: false
 ast_g729_bench_free_tarball_url: ''
 ast_g729_bench_digium_tarball_url: ''
 
@@ -67,7 +67,7 @@ ast_params_default:
   - file: asterisk
     section: options
     params:
-      - execincludes: "no"
+      - execincludes: 'no'
       - systemname: "{{ ast_domains | first }}"
       - runuser: asterisk
       # Note:
@@ -316,10 +316,10 @@ ast_sip_allowed_networks:
 ast_reject_networks: []
 # -192.168.77.1/32
 
-# yes = prefer ipv4
-# no  = do not prefer ipv4
+# true      = prefer ipv4
+# false     = do not prefer ipv4
 # undefined = do not change /etc/gai.conf
-#ast_prefer_ipv4: no
+#ast_prefer_ipv4: false
 
 # stun address:
 #  stun.tld.com
@@ -333,6 +333,6 @@ ast_stun_addr: ""
 # 2.pool.ntp.org
 ast_ntp_server: ""
 
-# cpu quota examples: 5% 60% 100% no
-ast_cpu_quota: no
+# cpu quota examples: 5% 60% 100% false
+ast_cpu_quota: false
 ...

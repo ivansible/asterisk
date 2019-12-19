@@ -1,4 +1,4 @@
-# ivansible.asterisk_core
+# ivansible.ast_core
 
 This role deploys basic asterisk server on a linux host.
 This is a core deployment to be extended by other asterisk-related roles.
@@ -50,13 +50,13 @@ For details about encryption, please refer to role
 
 Inherited variables are listed below, along with default values.
 
-    ast_reset: no  (inherited from asterisk_base)
+    ast_reset: false  (inherited from ast_base)
 
-If `yes`, the role will reset all configuration files to their initial state
+If `true`, the role will reset all configuration files to their initial state
 before adjusting particular options. Also, database will be always fully reset
-from saved dump. If `no`, the dump is applied only when a new database is created.
+from saved dump. If `false`, the dump is applied only when a new database is created.
 
-    ast_experimental: no
+    ast_experimental: false
 Enables use of TCP TOS.
 
     ast_ssl_cert: /etc/ssl/certs/ssl-cert-snakeoil.pem
@@ -68,12 +68,12 @@ which asterisk will use for TLS conections.
 The list of domains that asterisk will accept for incoming calls.
 The first domain is default and used for outgoing calls.
 
-    ast_dialplan_hints: yes
+    ast_dialplan_hints: true
     ast_default_language: en
     ast_default_codecs: g729,g722,ulaw,alaw
-    ast_qualify_value: "yes"
+    ast_qualify_value: 'yes'
     ast_local_dir: /usr/local/asterisk
-These variables are inherited from the `asterisk_base` role.
+These variables are inherited from the `ast_base` role.
 
     ast_pg_host: localhost
     ast_pg_port: 5432
@@ -91,10 +91,10 @@ Available variables are listed below, along with default values.
 List of exteranlly visible host addresses.
 You can customize this list if automatic ansible discovery fails.
 
-    ast_default_nat: yes
-If `yes`, asterisk will treat all incoming requests the identically
+    ast_default_nat: true
+If `true`, asterisk will treat all incoming requests the identically
 and reply to the IP port from where a request has come.
-If `no`, asterisk will by default the port set in the `rport` directive.
+If `false`, asterisk will by default the port set in the `rport` directive.
 This is less secure as remote attacker can find user names of configured
 peers depending on the asterisk reply.
 
@@ -102,14 +102,14 @@ peers depending on the asterisk reply.
       - name: softphone1
         password: secretpass1
         exten: 101
-        srtp: no
-        active: yes
+        srtp: false
+        active: true
 List of SIP and dialplan parameters for softphones.
 Name and password define username and incoming secret for softphone SIP peer.
 Extension `exten` defines how softphone will be accesible from dialplan.
 
-    ast_softphones_secure: yes
-If `yes`, softphones will be required to connect via TLS and use SRTP only.
+    ast_softphones_secure: true
+If `true`, softphones will be required to connect via TLS and use SRTP only.
 However, you can still enable plain RTP for a particular softphone using
 the `srtp` per-phone setting.
 
@@ -151,14 +151,14 @@ Completely reject requests to SIP and TLS ports from IPs on these networks.
 Default is none. Set this if you are attacked by SIP hackers.
 Each network is defined in format like `172.12.0.0/17`.
 
-The iptables rules will be placed directly in the ufw file
+The new iptables rules will be placed directly in the ufw file
 `/etc/ufw/before.rules` in the block `ANSIBLE reject sip hackers`
 destined for the chain `ufw-before-input`.
 
-    ast_prefer_ipv4: no
-If `yes`, GLIBC DNS resolver is configured to prefer IPV4.
-If `no`, GLIBC resolver will return addresses as received (no preference).
-If not set, the file `/etc/gai.conf` will not be modified.
+    ast_prefer_ipv4: false
+If `true`, GLIBC DNS resolver is configured to prefer IPV4.
+If `false`, GLIBC resolver will return addresses as received (no preference).
+If unset, the file `/etc/gai.conf` will not be modified.
 
     ast_stun_addr: ""
 If not empty, this address will be configured in `rtp.conf`.
@@ -176,9 +176,9 @@ If not empty, installation will step-sync host time to the given NTP server.
 By default we do not do this to save some playbook time.
 If syncing is important, set time server to something like `2.pool.ntp.org`.
 
-    ast_cpu_quota: no
+    ast_cpu_quota: false
 CPU quota.
-Examples: `5% 60% 100% no`
+Examples: `5% 60% 100% false`
 
 
     ast_modules_preload: ...
@@ -193,7 +193,7 @@ Asterisk 13.1 on Ubuntu Xenial.
 
     ast_packages_install: ...
 List of APT packages to install:
-- asterisk core
+- core asterisk packages
 - format-agnostic asterisk sound packages
 - asterisk modules for playing MP3 natively
 - utilities for converting moh files between MP3/WAV formats
@@ -272,9 +272,9 @@ This user is added to the `asterisk` group for access to asterisk CLI.
 
 ## Dependencies
 
-This role inherits defaults and handlers from `ivansible.asterisk_base`.
+This role inherits defaults and handlers from `ivansible.ast_base`.
 
-List of inherited variables (only used variables are listed):
+List of inherited variables (only variables actually used are listed):
   - ast_reset
   - ast_experimental
   - ast_ssl_cert
@@ -331,7 +331,7 @@ in the files `sip.d/<rolename>.peers.conf` under directory `/etc/asterisk`.
 ## Dialplan
 
 This role disables LUA and AEL dialplan modules and removes
-corresponding configuration. We use old-school asterisk dialplan only.
+corresponding configurations. We opt for the old-school asterisk dialplan.
 
 The main asterisk dialplan configuration file `/etc/asterisk/extensions.conf`
 is made modular by means of `#include`s.
@@ -418,7 +418,7 @@ Example:
 
 ## ACLs
 
-If peers IP addresses should be limited, please create ACL definitions
+If the peers IP addresses should be limited, please create ACL definitions
 in the files `/etc/asterisk/acl.d/<rolename>.conf`. Asterisk combines
 ACLs with `AND` logic, so if ACLs cover different IP ranges, the result
 will always be to reject. Therefore, every ACL should cover ALL addresses
@@ -428,7 +428,7 @@ This role contains a task group for creating white-list ACLs,
 which can be invoked in other asterisk roles as follows:
 ```
 - include_role:
-    name: ivansible.asterisk_core
+    name: ivansible.ast_core
     tasks_from: _acl.yml
   vars:
     acl: <acl_name>
@@ -451,8 +451,8 @@ atxfer=*6
 disconnect=*0
 ```
 
-Dialplan subroutines `phone` and `provider` wrap `Dial` application
-for use in asterisk roles. Currently, only the `disconnect` feature
+Dialplan subroutines named `phone` and `provider` wrap the `Dial` application
+for use in various asterisk roles. Currently, only the `disconnect` feature
 is enabled (the `h` flag, see Asterisk documentation).
 
 *Note*: The `phone` subroutine enables music-on-hold (`m`),
@@ -468,7 +468,7 @@ None
 
     - hosts: asterisk.example.com
       roles:
-         - role: ivansible.asterisk_core
+         - role: ivansible.ast_core
            ast_reset: yes
            ast_ip_list:
              - 192.168.1.21
@@ -476,8 +476,8 @@ None
              - name: softphone1
              - password: secretpass1
              - exten: 101
-             - srtp: no
-             - active: yes
+             - srtp: false
+             - active: true
 
 
 ## License
@@ -486,4 +486,4 @@ MIT
 
 ## Author Information
 
-Created in 2018 by [IvanSible](https://github.com/ivansible)
+Created in 2018-2020 by [IvanSible](https://github.com/ivansible)

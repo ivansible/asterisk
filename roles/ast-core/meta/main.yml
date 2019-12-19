@@ -1,14 +1,14 @@
 ---
 dependencies:
   - ivansible.lin_base       # for common linux defaults and handlers
-  - ivansible.asterisk_base  # for common asterisk defaults and handlers
+  - ivansible.ast_base       # for common asterisk defaults and handlers
   - ivansible.backup_base    # for postgresql_db_restore_encrypted.yml
   # the following roles are imported directly from tasks:
   #- ivansible.lin_docker
   #- ivansible.dev_user
 
 galaxy_info:
-  role_name: asterisk_core
+  role_name: ast_core
   author: "Ivan Andreev"
   description: "deploy asterisk server on linux"
   company: "IvanSible"
