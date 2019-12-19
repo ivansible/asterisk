@@ -1,12 +1,12 @@
 ---
 dependencies:
-  - ivansible.asterisk_base  # for common asterisk defaults and handlers
-  # this and other roles really depend on asterisk_core, but inclusion
+  - ivansible.ast_base  # for common asterisk defaults and handlers
+  # this and other roles actually depend on asterisk_core, but inclusion
   # should be done explicitly in playbook to avoid repetitive execution.
-  #- ivansible.asterisk_core
+  # - ivansible.ast_core
 
 galaxy_info:
-  role_name: asterisk_soho
+  role_name: ast_soho
   author: "Ivan Andreev"
   description: "Connect home office Asterisk with SIP phones and SIP gateway provider"
   company: "IvanSible"
@@ -22,6 +22,7 @@ galaxy_info:
   galaxy_tags:
     - linux
     - asterisk
+    - soho
 
   github_branch: master
 ...

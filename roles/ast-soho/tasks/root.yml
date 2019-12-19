@@ -1,7 +1,7 @@
 ---
 - name: network whitelist for soho gateway provider
   include_role:
-    name: ivansible.asterisk_core
+    name: ivansible.ast_core
     tasks_from: _acl.yml
   vars:
     acl: "{{ ast_soho_gateway_alias }}"
@@ -9,7 +9,7 @@
 
 - name: network whitelist for soho sip-phones
   include_role:
-    name: ivansible.asterisk_core
+    name: ivansible.ast_core
     tasks_from: _acl.yml
   vars:
     acl: "{{ ast_soho_phones_alias }}"
@@ -45,7 +45,7 @@
 - name: enable dialplan contexts for soho phones
   lineinfile:
     path: /etc/asterisk/context.d/{{ ast_soho_phones_alias }}.conf
-    create: yes
+    create: true
     line: include => {{ item }}
   loop:
     - "{{ ast_soho_phones_alias }}"
@@ -57,7 +57,7 @@
 - name: enable soho dialplan contexts for softphones
   lineinfile:
     path: /etc/asterisk/context.d/softphones.conf
-    create: yes
+    create: true
     line: include => {{ item }}
   loop:
     - "{{ ast_soho_phones_alias }}"

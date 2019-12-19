@@ -1,7 +1,7 @@
-# ivansible.asterisk_soho
+# ivansible.ast_soho
 
 This role extends core Asterisk deployment configured by
-[ivansible.asterisk_core](https://github.com/ivansible/asterisk-core)
+[ivansible.ast_core](https://github.com/ivansible/ast-core)
 for work in a small office with a few SIP phones and several
 accounts registered on a single SIP gateway provider.
 
@@ -13,7 +13,7 @@ None
 
 ## Role Variables
 
-Some variables are inherited from the `asterisk_base` role,
+Some variables are inherited from the `ast_base` role,
 see them in the _Dependencies_ section.
 Role-specific variables are listed below, along with default values.
 
@@ -23,8 +23,8 @@ Aliases are used in many places in this role to produce full names of
 generated dialplan contexts, rule-sets, SIP peer groups and ACL rules
 for gateway and phones.
 
-    ast_soho_gateway_codecs: "g729,g722,ulaw,alaw"
-    ast_soho_phones_codecs: "g729,g722,ulaw,alaw"
+    ast_soho_gateway_codecs: 'g729,g722,ulaw,alaw'
+    ast_soho_phones_codecs: 'g729,g722,ulaw,alaw'
 These are just comma-separated lists of Asterisk codec modules allowed
 for gateway provider and phones in order of preference.
 
@@ -45,11 +45,11 @@ will be configured in Asterisk from this white list of IP networks.
       - name: gw-account1
         username: 4215
         password: secret1
-        active: yes
+        active: true
       - name: gw-account2
         username: 4216
         password: secret2
-        active: no
+        active: false
 A list of account credentials for placing outgoing calls through provider.
 Each account can be connected with a few phones in the `ast_soho_phones`
 list. Outgoing calls from a phone will placed via the connected account.
@@ -71,7 +71,7 @@ All incoming calls will land in a dialplan context generated right for that.
         password: secret
         exten: 101
         gateway: account1
-        active: yes
+        active: true
 Each SIP phone will have a SIP peer configured in Asterisk with `name` for
 username and `password` for specific secret. The `gateway` field should
 point to an existing gateway account `name` from the list above.
@@ -137,7 +137,7 @@ number with `exten*`, like sip-phones themselves.
 ## Dependencies
 
 This role inherits defaults and handlers from
-[ivansible.asterisk_base](https://github.com/ivansible/asterisk-base).
+[ivansible.ast_base](https://github.com/ivansible/ast-base).
 
 List of inherited variables (only used variables are listed):
   - ast_experimental
@@ -151,9 +151,9 @@ List of inherited handlers:
   - reload asterisk service
 
 Also this role depends on
-[ivansible.asterisk_core](https://github.com/ivansible/asterisk-core),
+[ivansible.ast_core](https://github.com/ivansible/ast-core),
 but this dependency is not recorded in meta information.
-You should explicitly include `asterisk_core` in your playbook before
+You should explicitly include `ast_core` in your playbook before
 this role, as shown in the example below. This approach avoids repetitive
 execution of time-consuming base role, when several dependent roles are used.
 
@@ -162,12 +162,12 @@ execution of time-consuming base role, when several dependent roles are used.
 
     - hosts: asterisk.example.com
       roles:
-         - role: ivansible.asterisk_core
-           ast_reset: yes
+         - role: ivansible.ast_core
+           ast_reset: true
            ast_ip_list:
              - 192.168.1.21
            ast_softphones: []
-         - role: ivansible.asterisk_soho
+         - role: ivansible.ast_soho
            ast_soho_gateway_billing_exten: "*105#"
            ast_soho_gateway_accounts:
              - name: account1
@@ -180,7 +180,7 @@ execution of time-consuming base role, when several dependent roles are used.
                password: secret
                exten: 101
                gateway: account1
-               active: yes
+               active: true
 
 
 ## License
@@ -189,4 +189,4 @@ MIT
 
 ## Author Information
 
-Created in 2018 by [IvanSible](https://github.com/ivansible)
+Created in 2018-2020 by [IvanSible](https://github.com/ivansible)
