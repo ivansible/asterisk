@@ -5,16 +5,16 @@
       file:
         path: "{{ ast_billing_dir }}"
         state: directory
-      become: no
+      become: false
 
     - name: enable public key for gitlab.com
       import_role:
-        name: ivansible.dev_user
-        tasks_from: known-hosts.yml
+        name: ivansible.lin_ssh
+        tasks_from: known_hosts.yml
       vars:
-        dev_user_known_host_list:
+        lin_ssh_known_hosts:
           - gitlab.com
-      become: yes
+      become: true
 
     - name: checkout billing code
       git:
@@ -22,10 +22,10 @@
         version: master
         dest: "{{ ast_billing_dir }}"
         # only clone, don't choke on pending modifications
-        update: no
+        update: false
         # key file not needed because we forward ssh agent
         #key_file: ~/.ssh/git_repo.key
-      become: no
+      become: false
 
     - name: install xenial/bionic packages for billing
       apt:
@@ -38,21 +38,21 @@
           #- postgresql-server-dev-10
           #- libxml2-dev
           #- libxslt1-dev
-      become: yes
+      become: true
 
     - name: install bionic-only packages for billing
       apt:
         name:
           - libpython-dev
       when: ansible_lsb.codename == 'bionic'
-      become: yes
+      become: true
 
     - name: install python dependencies for billing
       pip:
         virtualenv: "{{ ast_billing_dir }}/venv"
         virtualenv_python: python2
         requirements: "{{ ast_billing_dir }}/requirements.txt"
-      become: no
+      become: false
   # end of block
   tags: ast_billing_all
 
@@ -68,7 +68,7 @@
           - "{{ ast_billing_dir }}/etc/options.ini"
         creates:
           "{{ ast_billing_dir }}/etc/options.ini"
-      become: no
+      become: false
 
     - name: tweak billing options
       ini_file:
@@ -84,7 +84,7 @@
         loop_var: opt
         label: "{{ opt.section }}/{{ opt.option }}"
       #no_log: "{{ hide_secrets |bool }}"
-      become: yes
+      become: true
 
     - name: configure billing library secrets
       copy:
@@ -96,8 +96,8 @@
         owner: "{{ ansible_user_id }}"
         group: asterisk
         mode: 0640
-        force: no
-      become: yes
+        force: false
+      become: true
   # end of block
   tags: ast_billing_all
 
@@ -145,14 +145,14 @@
     - name: enable billing dialplan rules for other contexts
       lineinfile:
         path: /etc/asterisk/context.d/{{ item }}.conf
-        create: yes
+        create: true
         line: include => billing-services
-      when: item != ''
+      when: item != ''  # noqa 602
       loop:
         - softphones
         - "{{ ast_soho_phones_alias | default('') }}"
       notify: reload asterisk service
   # end of block
-  become: yes
+  become: true
   tags: ast_billing_all
 ...

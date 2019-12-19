@@ -1,5 +1,5 @@
 ---
-# defaults file for ivansible.asterisk_billing
+# defaults for ivansible.ast_billing
 
 ast_billing_dir: "{{ ansible_user_dir }}/devel/asterisk-billing"
 
