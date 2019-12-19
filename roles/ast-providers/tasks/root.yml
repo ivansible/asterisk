@@ -1,7 +1,7 @@
 ---
 - name: network whitelist for asterisk providers
   include_role:
-    name: ivansible.asterisk_core
+    name: ivansible.ast_core
     tasks_from: _acl.yml
   vars:
     acl: "{{ provider.name }}"

@@ -1,8 +1,9 @@
 ---
-- name: use import to become root globally
+- name: become root and install the role
   import_tasks: root.yml
   become: true
   tags: ast_providers_all
 
-- meta: flush_handlers
+- name: flush handlers
+  meta: flush_handlers
 ...

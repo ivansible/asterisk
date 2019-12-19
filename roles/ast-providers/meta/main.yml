@@ -1,12 +1,12 @@
 ---
 dependencies:
-  - ivansible.asterisk_base  # for common asterisk defaults and handlers
-  # this and other roles really depend on asterisk_core, but inclusion
+  - ivansible.ast_base  # for common asterisk defaults and handlers
+  # this and other roles really depend on ast_core, but inclusion
   # should be done explicitly in playbook to avoid repetitive execution.
-  #- ivansible.asterisk_core
+  #- ivansible.ast_core
 
 galaxy_info:
-  role_name: asterisk_providers
+  role_name: ast_providers
   author: "Ivan Andreev"
   description: "configure asterisk for calls via voip providers"
   company: "IvanSible"

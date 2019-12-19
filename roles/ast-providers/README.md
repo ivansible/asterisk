@@ -1,7 +1,7 @@
-# ivansible.asterisk_providers
+# ivansible.ast_providers
 
 This role extends core Asterisk deployment configured by
-[ivansible.asterisk_core](https://github.com/ivansible/asterisk-core)
+[ivansible.ast_core](https://github.com/ivansible/ast-core)
 with calls via few SIP providers.
 
 
@@ -21,8 +21,8 @@ for ACL rule name.
 
     exten: 5
 `exten` defines how calls via a specific provider can be placed from
-`softphones` (created by [asterisk_core](https://github.com/ivansible/asterisk-core))
-and `sipphones` (created by [asterisk_soho](https://github.com/ivansible/asterisk-soho)).
+`softphones` (created by [ast_core](https://github.com/ivansible/ast-core))
+and `sipphones` (created by [ast_soho](https://github.com/ivansible/ast-soho)).
 
     prepend: ""
 `prepend` by default is an empty string.
@@ -58,8 +58,8 @@ Comma-separated list of codecs. Optional with default `ast_default_codecs`.
     language: en
 Language for sound prompts. Optional with default `ast_default_language`.
 
-    active: yes
-If this boolean is `no`, provider will be excluded from configuration.
+    active: true
+If this boolean is `false`, provider will be excluded from configuration.
 
 
 ## Tags
@@ -70,7 +70,7 @@ If this boolean is `no`, provider will be excluded from configuration.
 ## Dependencies
 
 This role inherits defaults and handlers from
-[ivansible.asterisk_base](https://github.com/ivansible/asterisk-base).
+[ivansible.ast_base](https://github.com/ivansible/ast-base).
 
 List of inherited variables (only used variables are listed):
   - ast_default_language
@@ -81,9 +81,9 @@ List of inherited handlers:
   - reload asterisk service
 
 Also this role depends on
-[ivansible.asterisk_core](https://github.com/ivansible/asterisk-core),
+[ivansible.ast_core](https://github.com/ivansible/ast-core),
 but this dependency is not recorded in meta information.
-You should explicitly include `asterisk_core` in your playbook before
+You should explicitly include `ast_core` in your playbook before
 this role, as shown in the example below. This approach avoids repetitive
 execution of time-consuming base role, when several dependent roles are used.
 
@@ -92,7 +92,7 @@ execution of time-consuming base role, when several dependent roles are used.
 
     - hosts: asterisk-box
       roles:
-         - role: asterisk_providers
+         - role: ast_providers
 
 
 ## License
@@ -101,4 +101,4 @@ MIT
 
 ## Author Information
 
-Created in 2018 by [IvanSible](https://github.com/ivansible)
+Created in 2018-2020 by [IvanSible](https://github.com/ivansible)
