@@ -1,21 +1,21 @@
 ---
-- name: open asterisk sip port
+- name: open asterisk sip port in ufw
   # this step is separate because we want to specify
   # a list of ip networks given access to the non-tls port
   ufw:
-    port: 5060
+    port: '5060'
     rule: allow
     from: "{{ item }}"
   no_log: "{{ hide_secrets |bool }}"
   loop: "{{ ast_sip_allowed_networks }}"
 
-- name: open asterisk sip-tls port
+- name: open asterisk sip-tls port in ufw
   ufw:
-    port: 5061
+    port: '5061'
     rule: allow
   no_log: "{{ hide_secrets |bool }}"
 
-- name: open asterisk rtp ports
+- name: open asterisk rtp ports in ufw
   ufw:
     port: "{{ ast_rtp_port_start }}:{{ ast_rtp_port_end }}"
     proto: udp
@@ -23,9 +23,9 @@
   no_log: "{{ hide_secrets |bool }}"
 
 
-- name: close asterisk ami ports
+- name: close asterisk ami ports in ufw
   ufw:
-    port: "{{ ast_ami_port }}"
+    port: "{{ item |string }}"
     rule: allow
     delete: true
   no_log: "{{ hide_secrets |bool }}"
@@ -35,7 +35,7 @@
     - "{{ ast_https_port }}"
 
 
-- name: disable annoying sip hackers
+- name: disable annoying sip hackers in ufw
   blockinfile:
     path: /etc/ufw/before.rules
     block: |

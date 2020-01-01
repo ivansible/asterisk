@@ -29,9 +29,25 @@
     - ast_systemd
     - ast_cpu_quota
 
-- import_tasks: firewall.yml
-  when: lin_use_firewall |bool
+
+- include_tasks: firewall-ufw.yml
+  args:
+    apply:
+      become: true
+      tags: ast_firewall
+  when: lin_firewall == 'ufw'
   tags: ast_firewall
+
+- include_tasks: firewall-ferm.yml
+  args:
+    apply:
+      become: true
+      tags:
+        - skip_ansible_lint
+        - ast_firewall
+  when: lin_firewall == 'ferm'
+  tags: ast_firewall
+
 
 - import_tasks: syslog.yml
   when: lin_use_rsyslog |bool
