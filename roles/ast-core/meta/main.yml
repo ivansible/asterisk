@@ -1,6 +1,6 @@
 ---
 dependencies:
-  - ivansible.lin_base       # for common linux defaults and handlers
+  - ivansible.lin_base       # for common linux defaults, handlers, modules
   - ivansible.ast_base       # for common asterisk defaults and handlers
   - ivansible.backup_base    # for postgresql_db_restore_encrypted.yml
   # the following roles are imported directly from tasks:

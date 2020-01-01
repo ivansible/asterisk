@@ -8,7 +8,7 @@
   unarchive:
     src: "{{ ast_moh_mp3_tarball_url }}"
     dest: "{{ ast_local_dir }}/moh"
-    remote_src: yes
+    remote_src: true
     creates: "{{ ast_local_dir }}/moh/mp3"
 
 - name: directory for music-on-hold conversion scripts

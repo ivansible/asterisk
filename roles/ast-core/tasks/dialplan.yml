@@ -31,7 +31,7 @@
   template:
     src: sip.conf
     dest: /etc/asterisk/sip.conf
-    backup: yes
+    backup: true
     owner: root
     group: asterisk
     mode: 0640
@@ -42,7 +42,7 @@
   template:
     src: extensions.conf
     dest: /etc/asterisk/extensions.conf
-    backup: yes
+    backup: true
     owner: root
     group: asterisk
     mode: 0640
@@ -52,14 +52,14 @@
   template:
     src: dialplan/menu.conf
     dest: /etc/asterisk/dialplan.d/menu.conf
-    backup: yes
+    backup: true
   notify: restart asterisk service
 
 - name: configure common dialplan includes
   template:
     src: dialplan/{{ item }}.conf
     dest: /etc/asterisk/dialplan.d/{{ item }}.common.conf
-    backup: yes
+    backup: true
   loop:
     - macros
     - services
@@ -78,20 +78,20 @@
   template:
     src: softphones-peers.conf
     dest: /etc/asterisk/sip.d/softphones.peers.conf
-    backup: yes
+    backup: true
   notify: restart asterisk service
 
 - name: configure dialplan extensions for softphones
   template:
     src: softphones-dialplan.conf
     dest: /etc/asterisk/dialplan.d/softphones.rules.conf
-    backup: yes
+    backup: true
   notify: restart asterisk service
 
 - name: enable dialplan contexts for softphones
   lineinfile:
     path: /etc/asterisk/context.d/softphones.conf
-    create: yes
+    create: true
     line: include => {{ item }}
   loop:
     - services

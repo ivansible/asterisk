@@ -8,7 +8,7 @@
   unarchive:
     src: "{{ ast_sounds_extras_wav_url }}"
     dest: "{{ ast_local_dir }}/sounds"
-    remote_src: yes
+    remote_src: true
     creates: "{{ ast_local_dir }}/sounds/extras/ru/today.wav"
     owner: root
     group: root

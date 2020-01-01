@@ -30,5 +30,5 @@
   systemd:
     name: asterisk
     state: started
-    enabled: yes
+    enabled: true
 ...

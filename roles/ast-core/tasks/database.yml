@@ -38,16 +38,16 @@
     login_host: "{{ ast_pg_host }}"
     db_port: "{{ ast_pg_port }}"
     login_password: "{{ srv_pg_admin_password }}"
-  when: ast_pg_dump_url != '' and
-        (ast_reset |bool
+  when: (ast_reset |bool
          or (ast_pg_user_result is changed
              or ast_pg_database_result is changed))
+        and ast_pg_dump_url != '' # noqa 602
 
 
 - name: configure asterisk database in unix ODBC
   blockinfile:
     path: /etc/odbc.ini
-    create: yes
+    create: true
     owner: root
     group: asterisk
     mode: 0640

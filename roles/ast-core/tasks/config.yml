@@ -8,7 +8,7 @@
   synchronize:
     src: /etc/asterisk.orig/
     dest: /etc/asterisk/
-    delete: yes
+    delete: true
   delegate_to: "{{ inventory_hostname }}"
   when: ast_reset |bool
   notify: restart asterisk service

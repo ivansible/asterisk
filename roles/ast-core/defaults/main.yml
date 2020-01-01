@@ -34,8 +34,8 @@ ast_softphones: []
 # - name: softphone1
 #   password: secretpass1
 #   exten: 101
-#   srtp: no
-#   active: yes
+#   srtp: false
+#   active: true
 
 ast_softphones_secure: true
 

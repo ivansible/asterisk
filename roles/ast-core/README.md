@@ -470,7 +470,7 @@ None
     - hosts: asterisk.example.com
       roles:
          - role: ivansible.ast_core
-           ast_reset: yes
+           ast_reset: true
            ast_ip_list:
              - 192.168.1.21
            ast_softphones:

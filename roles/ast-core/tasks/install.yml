@@ -3,7 +3,7 @@
   apt:
     name: "{{ ast_packages_install }}"
     state: present
-    install_recommends: no
+    install_recommends: false
   tags: ast_packages
 
 

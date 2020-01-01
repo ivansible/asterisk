@@ -36,6 +36,6 @@
       {% endif %}
       {% endfor %}
   when: acl is defined and networks is defined
-  become: yes
+  become: true
   notify: reload asterisk service
 ...

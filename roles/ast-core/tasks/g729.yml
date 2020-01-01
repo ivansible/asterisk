@@ -9,7 +9,7 @@
     url: "{{ ast_g729_codec_url }}"
     dest: "{{ ast_local_dir }}/codec-g729/"
     mode: 0644
-    force: no
+    force: false
 
 - name: create link alias for chosen G729 codec
   file:
@@ -36,7 +36,7 @@
       unarchive:
         src: "{{ ast_g729_bench_free_tarball_url }}"
         dest: "{{ ast_local_dir }}"
-        remote_src: yes
+        remote_src: true
         creates: "{{ ast_local_dir }}/g729-bench-free/run-bench.sh"
 
     - name: fix permissions on the free benchmark running script
@@ -52,8 +52,8 @@
         src: "../g729-bench-free/run-bench.sh"
         dest: "{{ ast_local_dir }}/bin/g729-bench-free.sh"
 
-  when: ast_g729_bench_free_tarball_url != ''
-        and ast_g729_bench_enable |bool
+  when: ast_g729_bench_enable |bool
+        and ast_g729_bench_free_tarball_url != '' # noqa 602
   tags: ast_g729_bench
 
 
@@ -65,7 +65,7 @@
       unarchive:
         src: "{{ ast_g729_bench_digium_tarball_url }}"
         dest: "{{ ast_local_dir }}"
-        remote_src: yes
+        remote_src: true
         creates: "{{ ast_local_dir }}/g729-bench-digium/run-bench.sh"
 
     - name: fix permissions on the digium benchmark running script
@@ -84,7 +84,7 @@
     - name: check whether docker is installed
       stat:
         path: /usr/bin/docker
-        get_checksum: no
+        get_checksum: false
       register: _docker_binary
 
     - name: deploy docker required by digium benchmark
@@ -93,7 +93,7 @@
       when: not _docker_binary.stat.exists
             and lin_use_docker |bool
 
-  when: ast_g729_bench_digium_tarball_url != ''
-        and ast_g729_bench_enable |bool
+  when: ast_g729_bench_enable |bool
+        and ast_g729_bench_digium_tarball_url != '' # noqa 602
   tags: ast_g729_bench
 ...

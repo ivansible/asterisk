@@ -11,7 +11,7 @@
   user:
     name: asterisk
     groups: "{{ certbot_group |default('ssl-cert') }}"
-    append: yes
+    append: true
   notify: restart asterisk service
 
 - name: ensure that ssl key file is readable by asterisk, not by world
@@ -19,7 +19,7 @@
     path: "{{ ast_ssl_key }}"
     state: file
     group: "{{ certbot_group |default('ssl-cert') }}"
-    mode: "o="
+    mode: 'o='
 
 - name: ensure that asterisk can accces private key directory
   file:
