@@ -32,7 +32,7 @@
 - name: enable other contexts for inward calls from providers
   lineinfile:
     path: /etc/asterisk/context.d/providers.conf
-    create: yes
+    create: true
     line: include => {{ item }}
   loop:
     - softphones
@@ -43,7 +43,7 @@
 - name: enable outward providers calls for other contexts
   lineinfile:
     path: /etc/asterisk/context.d/{{ item }}.conf
-    create: yes
+    create: true
     line: include => providers-out
   loop:
     - softphones

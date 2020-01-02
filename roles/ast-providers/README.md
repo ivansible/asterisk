@@ -69,30 +69,37 @@ If this boolean is `false`, provider will be excluded from configuration.
 
 ## Dependencies
 
-This role inherits defaults and handlers from
-[ivansible.ast_base](https://github.com/ivansible/ast-base).
+1. This role inherits defaults and handlers from
+   [ivansible.ast_base](https://github.com/ivansible/ast-base).
 
-List of inherited variables (only used variables are listed):
-  - ast_default_language
-  - ast_default_codecs
+   List of inherited variables (only used variables are listed):
+    - `ast_default_language`
+    - `ast_default_codecs`
 
-List of inherited handlers:
-  - restart asterisk service (not used)
-  - reload asterisk service
+   List of inherited handlers:
+    - `restart asterisk service` (not used)
+    - `reload asterisk service`
 
-Also this role depends on
-[ivansible.ast_core](https://github.com/ivansible/ast-core),
-but this dependency is not recorded in meta information.
-You should explicitly include `ast_core` in your playbook before
-this role, as shown in the example below. This approach avoids repetitive
-execution of time-consuming base role, when several dependent roles are used.
+2. This role inherits few variables from the role
+   [ivansible.ast_soho](https://github.com/ivansible/ast-soho).
+
+   List of inherited variables (only used variables are listed):
+    - `ast_soho_phones_alias`
+    - `ast_soho_gateway_alias`
+
+3. Also this role depends on
+   [ivansible.ast_core](https://github.com/ivansible/ast-core),
+   but this dependency is not recorded in meta information.
+   You should explicitly include `ast_core` in your playbook before
+   this role, as shown in the example below. This approach avoids repetitive
+   execution of time-consuming base role, when several dependent roles are used.
 
 
 ## Example Playbook
 
     - hosts: asterisk-box
       roles:
-         - role: ast_providers
+         - role: ivansible.ast_providers
 
 
 ## License
