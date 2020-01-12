@@ -132,12 +132,18 @@ If this is not empty, the role will reset database from given dump.
     ast_params_host: []
 You can use these to adjust host-specific asterisk options.
 
+    ast_sip_port: 5060
+    ast_tls_port: 5061
     ast_rtp_port_start: 10100
     ast_rtp_port_end: 10300
     ast_ami_port: 5038
     ast_http_port: 8088
     ast_https_port: 8089
 Various ports.
+
+    ast_sip_limit: 1/sec
+    ast_sip_burst: 9
+Set limit on SIP transactions per second (if `limit` is not an empty string).
 
     ast_ami_admin_password: ast-ami-secret
 AMI adminitrator user password. By default only administrator

@@ -3,7 +3,7 @@
   # this step is separate because we want to specify
   # a list of ip networks given access to the non-tls port
   ufw:
-    port: '5060'
+    port: "{{ ast_sip_port |string }}"
     rule: allow
     from: "{{ item }}"
   no_log: "{{ hide_secrets |bool }}"
@@ -11,7 +11,7 @@
 
 - name: open asterisk sip-tls port in ufw
   ufw:
-    port: '5061'
+    port: "{{ ast_tls_port |string }}"
     rule: allow
   no_log: "{{ hide_secrets |bool }}"
 
@@ -40,8 +40,9 @@
     path: /etc/ufw/before.rules
     block: |
       {% for network in ast_reject_networks %}
-      -A ufw-before-input -p udp --dport 5060 -s {{ network }} -j DROP
-      -A ufw-before-input -p tcp --dport 5060:5061 -s {{ network }} -j DROP
+      -A ufw-before-input -p udp --dport {{ ast_sip_port }} -s {{ network }} -j DROP
+      -A ufw-before-input -p tcp --dport {{ ast_sip_port }} -s {{ network }} -j DROP
+      -A ufw-before-input -p tcp --dport {{ ast_tls_port }} -s {{ network }} -j DROP
       {% endfor %}
     insertbefore: "^COMMIT"
     marker: "# {mark} ANSIBLE reject sip hackers"

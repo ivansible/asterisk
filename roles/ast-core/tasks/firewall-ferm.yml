@@ -3,7 +3,7 @@
   # this step is separate because we want to specify
   # a list of ip networks given access to the non-tls port
   ferm_port:
-    port: 5060
+    port: "{{ ast_sip_port }}"
     domain: external
     comment: asterisk sip
   when: ast_sip_allowed_networks |length == 0
@@ -11,7 +11,7 @@
 
 - name: open asterisk sip port for some networks in ferm
   ferm_port:
-    port: 5060
+    port: "{{ ast_sip_port }}"
     domain: internal
     comment: asterisk sip
   when: ast_sip_allowed_networks |length > 0
@@ -25,9 +25,29 @@
   when: "'any' not in ast_sip_allowed_networks"
 
 
+- name: set connection limit on asterisk sip port
+  ferm_rule:
+    name: asterisk-sip-limit
+    rule: |
+      # Asterisk SIP Limit
+      proto tcp syn dport {{ ast_sip_port }} {{ match_limit }} DROP;
+      proto tcp syn dport {{ ast_tls_port }} {{ match_limit }} DROP;
+      proto udp     dport {{ ast_sip_port }} {{ match_limit }} DROP;
+    hook: input
+    prio: 50
+  vars:
+    match_limit: >-
+      mod hashlimit
+      hashlimit-above {{ ast_sip_limit }}
+      hashlimit-burst {{ ast_sip_burst }}
+      hashlimit-mode srcip
+      hashlimit-name asterisk-sip
+  when: ast_sip_limit != ''  # noqa 602
+
+
 - name: open asterisk sip-tls port in ferm
   ferm_port:
-    port: 5061
+    port: "{{ ast_tls_port }}"
     domain: external
     comment: asterisk tls
 
@@ -42,9 +62,8 @@
 - name: close asterisk ami ports in ferm
   ferm_port:
     port: "{{ ast_ami_port }},{{ ast_http_port }},{{ ast_https_port }}"
-    domain: blocked
+    domain: internal
     comment: asterisk ami
-
 
 - name: disable annoying sip hackers in ferm
   ferm_host:
