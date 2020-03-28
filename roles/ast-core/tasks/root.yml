@@ -34,7 +34,7 @@
   tags: ast_firewall
 
 - import_tasks: syslog.yml
-  when: lin_use_syslog |bool
+  when: lin_use_rsyslog |bool
   tags: ast_syslog
 
 # asterisk rtp stream bridging requires precise local time
