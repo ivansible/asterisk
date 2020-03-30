@@ -1,5 +1,7 @@
 ---
-dependencies: []
+dependencies:
+  - ivansible.nginx_base  # for common defaults and custom modules
+  # ivansible.lin_nginx   (implicit dependency)
 
 galaxy_info:
   role_name: ast_webui
@@ -17,7 +19,9 @@ galaxy_info:
 
   galaxy_tags:
     - linux
-    - ansible
+    - nginx
+    - asterisk
+    - gigaset
 
   github_branch: master
 ...

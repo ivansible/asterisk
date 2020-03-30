@@ -1,3 +1,17 @@
 ---
 # defaults for ivansible.ast_webui
+
+ast_webui_server: ~
+ast_webui_lecert: ~
+ast_webui_bindip: 127.0.0.1
+ast_webui_origin: 192.168.1.1
+
+ast_webui_cloudflare_email: ~
+ast_webui_cloudflare_token: ~
+
+ast_webui_filters: []
+#  - {src: 'xxx', dst: xxx}
+
+ast_webui_lecert_crt_path: "/etc/letsencrypt/live/%s/fullchain.pem"
+ast_webui_lecert_key_path: "/etc/letsencrypt/live/%s/privkey.pem"
 ...

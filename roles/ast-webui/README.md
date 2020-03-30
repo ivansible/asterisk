@@ -4,9 +4,7 @@
 [![Travis Test Status](https://travis-ci.org/ivansible/ast-webui.svg?branch=master)](https://travis-ci.org/ivansible/ast-webui)
 [![Ansible Galaxy](https://img.shields.io/badge/galaxy-ivansible.ast__webui-68a.svg?style=flat)](https://galaxy.ansible.com/ivansible/ast_webui/)
 
-This role will:
- - action1;
- - action2;
+This role configures Web UI in Nginx for Asterisk and Gigaset.
 
 
 ## Requirements
@@ -16,30 +14,41 @@ None
 
 ## Variables
 
-Available variables are listed below, along with default values.
+    ast_webui_server: ~
+Front server name eg. `webui.example.com`.
 
-    variable1: 1
-    variable2: 2
+    ast_webui_lecert: ~
+Name of custom letsencrypt certificate for the server (optional).
+
+    ast_webui_bindip: 127.0.0.1
+IP addresses where nginx listens.
+
+    ast_webui_origin: 192.168.1.1
+Host name or IP address of the origin server.
+
+    ast_webui_cloudflare_email: ~
+    ast_webui_cloudflare_token: ~
+CloudFlare DNS credentials. If these are empty, then DNS task will be skipped.
 
 
 ## Tags
 
-- `role1_tag1` -- action1
-- `role1_tag2` -- action2
+- `ast_webui_all` -- all tasks
 
 
 ## Dependencies
 
-None
+- `ivansible.nginx_base` - inherit defaults and handlers
+- `ivansible.lin_nginx`    (implicit dependency)
 
 
 ## Example Playbook
 
-    - hosts: vagrant-boxes
+    - hosts: server
       roles:
          - role: ivansible.ast_webui
-           variable1: 1
-           variable2: 2
+           ast_webui_server: webui.example.com
+           ast_webui_origin: 192.168.11.2
 
 
 ## License

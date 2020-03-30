@@ -1,6 +1,29 @@
 ---
-- name: become root and install role
-  import_tasks: root.yml
+- name: setup webui dns record in cloudflare
+  cloudflare_dns:
+    account_email: "{{ ast_webui_cloudflare_email }}"
+    account_api_token: "{{ ast_webui_cloudflare_token }}"
+    zone: "{{ ast_webui_server.split('.')[-2:] |join('.') }}"
+    record: "{{ ast_webui_server.split('.')[:-2] |join('.') }}"
+    type: "{{ 'AAAA' if ':' in ast_webui_bindip else 'A' }}"
+    value: "{{ ast_webui_bindip }}"
+    proxied: false
+  become: false
+  delegate_to: localhost
+  when: ast_webui_server |default('')
+        and ast_webui_cloudflare_token |default('')
+  tags: ast_webui_all
+
+- name: setup gigaset webui in nginx
+  template:
+    src: gigaset.conf
+    dest: "{{ nginx_site_dir }}/gigaset.conf"
   become: true
-  tags: role_all
+  notify: reload nginx service
+  when: ast_webui_server |default('')
+  tags: ast_webui_all
+
+- name: apply new nginx settings
+  meta: flush_handlers
+  tags: ast_webui_all
 ...
