@@ -83,6 +83,10 @@ These variables are inherited from the `ast_base` role.
     ast_pg_pass: secret
 Database connection parameters.
 
+Variables inherited from the role `lin_base`:
+  - flag `lin_use_rsyslog` enables use of rsyslog and logrotate with asterisk
+  - flag `lin_compress_logs` enables/disables compression of rotated logs
+
 
 ## Role Variables
 

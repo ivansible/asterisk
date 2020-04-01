@@ -8,6 +8,7 @@
     force: false
   notify: restart syslog service
 
+
 - name: rotate asterisk log files
   copy:
     dest: /etc/logrotate.d/asterisk
@@ -23,8 +24,8 @@
           missingok
           rotate 4
           notifempty
-          compress
-          delaycompress
+          {{ commentout }}compress
+          {{ commentout }}delaycompress
           sharedscripts
           postrotate
               invoke-rc.d asterisk logger-reload > /dev/null 2> /dev/null
@@ -37,12 +38,14 @@
           missingok
           rotate 4
           notifempty
-          compress
-          delaycompress
+          {{ commentout }}compress
+          {{ commentout }}delaycompress
           sharedscripts
           postrotate
               invoke-rc.d rsyslog rotate > /dev/null 2> /dev/null
           endscript
       }
     force: true
+  vars:
+    commentout: "{{ '' if lin_compress_logs |bool or lin_compress_logs is none else '#' }}"
 ...
