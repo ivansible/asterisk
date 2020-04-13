@@ -1,0 +1,19 @@
+---
+- name: configure limit on asterisk connection attempts per host
+  lineinfile:
+    path: /etc/default/asterisk
+    regexp: "^HACKER_HITS="
+    line: "HACKER_HITS={{ ast_hackers_max_hits }}"
+
+- name: create asterisk anti-hacker shell script
+  template:
+    src: hackers/asterisk-hackers.sh
+    dest: /etc/cron.daily/asterisk-hackers
+    mode: 0755
+  vars:
+    ferm_dir: /etc/ferm
+    default_action: "{{ 'ferm' if lin_firewall == 'ferm' else 'show' }}"
+    block_file: "{{ ferm_dir }}/hosts.block"
+    log_file: /var/log/asterisk/security
+  notify: reload systemd daemon
+...

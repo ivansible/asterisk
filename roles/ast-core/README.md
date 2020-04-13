@@ -149,6 +149,9 @@ Various ports.
     ast_sip_burst: 9
 Set limit on SIP transactions per second (if `limit` is not an empty string).
 
+    ast_hackers_max_hits: 100
+Disable hosts that make more connection attempts than given limit.
+
     ast_ami_admin_password: ast-ami-secret
 AMI adminitrator user password. By default only administrator
 with full access is configured.
@@ -273,6 +276,9 @@ Enables asterisk service and optionally limits CPU quota.
 
     ast_firewall
 Opens SIP, TLS and RTP ports for asterisk. Blocks AMI TCP/HTTP ports.
+
+    ast_hackers
+Creates cron job to disable annoying password hackers.
 
     ast_timesync
 Asterisk requires precise time for sound bridging to work correctly.

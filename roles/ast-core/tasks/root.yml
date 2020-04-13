@@ -48,6 +48,9 @@
   when: lin_firewall == 'ferm'
   tags: ast_firewall
 
+- import_tasks: hackers.yml
+  tags: ast_hackers
+
 
 - import_tasks: syslog.yml
   when: lin_use_rsyslog |bool

@@ -40,7 +40,7 @@ ast_softphones: []
 ast_softphones_secure: true
 
 
-ast_user_agent: Asterisk PBX 13.18
+ast_user_agent: 'Asterisk PBX 13.18'
 
 ast_voicemail_pass: 1234
 
@@ -315,6 +315,8 @@ ast_ami_admin_password: ast-ami-secret
 # up to 10 new connections per minute per ip
 ast_sip_limit: 10/min
 ast_sip_burst: 5
+
+ast_hackers_max_hits: 100
 
 ast_sip_allowed_networks:
   - any

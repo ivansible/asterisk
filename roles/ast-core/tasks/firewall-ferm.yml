@@ -69,5 +69,5 @@
   ferm_host:
     host: "{{ ast_reject_networks }}"
     zone: blocked
-    comment: asterisk hackers
+    comment: asterisk
 ...
