@@ -191,6 +191,8 @@ If syncing is important, set time server to something like `2.pool.ntp.org`.
 CPU quota.
 Examples: `5% 60% 100% false`
 
+    ast_logrotate_timer: daily
+Rotate asterisk logs: daily or weekly
 
     ast_modules_preload: ...
 `res_odbc` is preloaded to allow for dynamic configuration.

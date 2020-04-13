@@ -341,4 +341,6 @@ ast_ntp_server: ""
 
 # cpu quota examples: 5% 60% 100% false
 ast_cpu_quota: false
+
+ast_logrotate_timer: daily  # daily/weekly
 ...
