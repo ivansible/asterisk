@@ -312,9 +312,9 @@ ast_http_port: 8088
 ast_https_port: 8089
 ast_ami_admin_password: ast-ami-secret
 
-# up to 10 connections per second
-ast_sip_limit: 1/sec
-ast_sip_burst: 9
+# up to 10 new connections per minute per ip
+ast_sip_limit: 10/min
+ast_sip_burst: 5
 
 ast_sip_allowed_networks:
   - any
