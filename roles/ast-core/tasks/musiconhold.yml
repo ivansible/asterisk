@@ -41,10 +41,13 @@
   register: moh_wav_filename
   changed_when: false
 
-- name: run music-on-hold mp3-to-wav conversion script once
+- name: run music-on-hold mp3-to-wav conversion script once (skip in check mode)
   command:
     cmd: "{{ ast_local_dir }}/bin/moh-mp3-to-wav.sh"
     creates: "{{ ast_local_dir }}/moh/wav/{{ moh_wav_filename.stdout }}"
+  ## the shell task above is skipped in check mode and produces no output
+  when: not ansible_check_mode
+
 
 - name: configure music-on-hold in asterisk
   copy:

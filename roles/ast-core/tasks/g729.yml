@@ -10,6 +10,8 @@
     dest: "{{ ast_local_dir }}/codec-g729/"
     mode: 0644
     force: false
+  ## get_url always reports as changed in check mode
+  when: not ansible_check_mode
 
 - name: create link alias for chosen G729 codec
   file:
