@@ -4,7 +4,7 @@
   # a list of ip networks given access to the non-tls port
   ferm_port:
     port: "{{ ast_sip_port }}"
-    domain: external
+    zone: external
     comment: asterisk sip
   when: ast_sip_allowed_networks |length == 0
         or 'any' in ast_sip_allowed_networks
@@ -12,7 +12,7 @@
 - name: open asterisk sip port for some networks in ferm
   ferm_port:
     port: "{{ ast_sip_port }}"
-    domain: internal
+    zone: internal
     comment: asterisk sip
   when: ast_sip_allowed_networks |length > 0
         and 'any' not in ast_sip_allowed_networks
@@ -20,7 +20,7 @@
 - name: add networks allowed for asterisk sip port in ferm
   ferm_host:
     host: "{{ ast_sip_allowed_networks }}"
-    domain: internal
+    zone: internal
     comment: asterisk
   when: "'any' not in ast_sip_allowed_networks"
 
@@ -48,26 +48,26 @@
 - name: open asterisk sip-tls port in ferm
   ferm_port:
     port: "{{ ast_tls_port }}"
-    domain: external
+    zone: external
     comment: asterisk tls
 
 - name: open asterisk rtp ports in ferm
   ferm_port:
     port: "{{ ast_rtp_port_start }}:{{ ast_rtp_port_end }}"
     proto: udp
-    domain: external
+    zone: external
     comment: asterisk rtp
 
 
 - name: close asterisk ami ports in ferm
   ferm_port:
     port: "{{ ast_ami_port }},{{ ast_http_port }},{{ ast_https_port }}"
-    domain: internal
+    zone: internal
     comment: asterisk ami
 
 - name: disable annoying sip hackers in ferm
   ferm_host:
     host: "{{ ast_reject_networks }}"
-    domain: blocked
+    zone: blocked
     comment: asterisk hackers
 ...
