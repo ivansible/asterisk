@@ -1,7 +1,7 @@
 ---
 - name: install core asterisk packages
   apt:
-    name: "{{ ast_packages_install }}"
+    name: "{{ ast_packages_install |select |list }}"
     state: present
     install_recommends: false
   tags: ast_packages

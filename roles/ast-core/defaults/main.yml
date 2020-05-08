@@ -280,7 +280,7 @@ ast_packages_install:
   - python3
 
   # for database
-  - python-psycopg2
+  - "{{ lin_use_python2 |ternary('python-psycopg2', '') }}"
   - python3-psycopg2
   - postgresql-client
   - unixodbc
