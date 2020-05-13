@@ -27,7 +27,7 @@
         #key_file: ~/.ssh/git_repo.key
       become: false
 
-    - name: install xenial/bionic packages for billing
+    - name: install common python packages for billing
       apt:
         name:
           - python
@@ -40,11 +40,10 @@
           #- libxslt1-dev
       become: true
 
-    - name: install bionic-only packages for billing
+    - name: install bionic+ packages for billing
       apt:
-        name:
-          - libpython-dev
-      when: ansible_lsb.codename == 'bionic'
+        name: "{{ lin_use_python2 |bool |ternary('libpython-dev', 'libpython2-dev') }}"
+      when: ansible_lsb.release is version('18.04','>=')
       become: true
 
     - name: install python dependencies for billing
