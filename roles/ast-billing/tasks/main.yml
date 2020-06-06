@@ -18,7 +18,7 @@
 
     - name: checkout billing code
       git:
-        repo: git@gitlab.com:ivandeex/asterisk-billing.git
+        repo: "{{ ast_billing_repo }}"
         version: master
         dest: "{{ ast_billing_dir }}"
         # only clone, don't choke on pending modifications
@@ -34,10 +34,10 @@
           - build-essential
           - libcurl4-openssl-dev
           - libssl-dev
-          #- libpython-dev
-          #- postgresql-server-dev-10
-          #- libxml2-dev
-          #- libxslt1-dev
+          # - libpython-dev
+          # - postgresql-server-dev-10
+          # - libxml2-dev
+          # - libxslt1-dev
       become: true
 
     - name: install bionic+ packages for billing
@@ -76,13 +76,13 @@
         option: "{{ opt.option }}"
         value: "{{ opt.value }}"
         owner: "{{ ansible_user_id }}"
-        group: asterisk
+        group: "{{ ast_billing_got_asterisk |bool |ternary('asterisk', omit) }}"
         mode: 0644
       loop: "{{ ast_billing_options }}"
       loop_control:
         loop_var: opt
         label: "{{ opt.section }}/{{ opt.option }}"
-      #no_log: "{{ hide_secrets |bool }}"
+      # no_log: "{{ hide_secrets |bool }}"
       become: true
 
     - name: configure billing library secrets
@@ -93,10 +93,11 @@
           {{ peer.name }} | {{ peer.username }} | {{ peer.password }}
           {% endfor %}
         owner: "{{ ansible_user_id }}"
-        group: asterisk
+        group: "{{ ast_billing_got_asterisk |bool |ternary('asterisk', omit) }}"
         mode: 0640
         force: false
       become: true
+
   # end of block
   tags: ast_billing_all
 
@@ -109,6 +110,12 @@
         owner: asterisk
         group: asterisk
         mode: 0775
+      when: ast_billing_got_asterisk |bool
+
+    - name: create directory for asterisk agi executables
+      file:
+        path: "{{ ast_local_dir }}/agi"
+        state: directory
 
     - name: create asterisk agi executables for billing
       copy:
@@ -121,8 +128,13 @@
           from pycall import dialer  # NOQA
           dialer.main()
         owner: root
-        group: asterisk
+        group: "{{ ast_billing_got_asterisk |bool |ternary('asterisk', omit) }}"
         mode: 0755
+
+    - name: create directory for asterisk dialplan rules
+      file:
+        state: directory
+        path: /etc/asterisk/dialplan.d
 
     - name: create dialplan rules for billing
       copy:
@@ -139,18 +151,18 @@
               same => n,Goto(endcall,1)
 
           ;; ========
-      notify: reload asterisk service
+      notify: "{{ ast_billing_got_asterisk |bool |ternary('reload asterisk service',[]) }}"
 
     - name: enable billing dialplan rules for other contexts
       lineinfile:
         path: /etc/asterisk/context.d/{{ item }}.conf
         create: true
         line: include => billing-services
-      when: item != ''  # noqa 602
+      when: item |default('')
       loop:
         - softphones
-        - "{{ ast_soho_phones_alias | default('') }}"
-      notify: reload asterisk service
+        - "{{ ast_soho_phones_alias |default('') }}"
+      notify: "{{ ast_billing_got_asterisk |bool |ternary('reload asterisk service',[]) }}"
   # end of block
   become: true
   tags: ast_billing_all

@@ -1,7 +1,9 @@
 ---
 # defaults for ivansible.ast_billing
 
+ast_billing_repo: git@github.com:ivandeex/asterisk-billing.git
 ast_billing_dir: "{{ ansible_user_dir }}/devel/asterisk-billing"
+ast_billing_got_asterisk: true
 
 ast_billing_options:
   - section: dialer
