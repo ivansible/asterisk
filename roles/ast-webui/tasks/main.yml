@@ -10,8 +10,10 @@
     proxied: false
   become: false
   delegate_to: localhost
-  when: ast_webui_server |default('')
-        and ast_webui_cloudflare_token |default('')
+  when:
+    - ast_webui_server |default('')
+    - ast_webui_bindip |default('')
+    - ast_webui_cloudflare_token |default('')
   tags: ast_webui_all
 
 - name: setup gigaset webui in nginx
