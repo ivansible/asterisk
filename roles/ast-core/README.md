@@ -1,5 +1,10 @@
 # ivansible.ast_core
 
+[![Github Test Status](https://github.com/ivansible/ast-core/workflows/Molecule%20test/badge.svg?branch=master)](https://github.com/ivansible/ast-core/actions)
+[![Travis Test Status](https://travis-ci.org/ivansible/ast-core.svg?branch=master)](https://travis-ci.org/ivansible/ast-core)
+[![Ansible Galaxy](https://img.shields.io/badge/galaxy-ivansible.ast__core-68a.svg?style=flat)](https://galaxy.ansible.com/ivansible/ast_core/)
+
+
 This role deploys basic asterisk server on a linux host.
 This is a core deployment to be extended by other asterisk-related roles.
 The role will:
