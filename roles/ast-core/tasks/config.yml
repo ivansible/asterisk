@@ -29,6 +29,10 @@
       ; permit all networks
       [all]
       permit = 0.0.0.0/0
+    owner: root
+    group: asterisk
+    mode: 0640
+    force: true
 
 - name: create /etc/asterisk/acl.conf
   copy:
@@ -37,6 +41,10 @@
       ;; acl.conf
       ;; ansible-managed
       #include acl.d/*.conf
+    owner: asterisk
+    group: asterisk
+    mode: 0640
+    force: true
   notify: restart asterisk service
 
 
@@ -44,6 +52,9 @@
   template:
     src: config/{{ item }}.conf
     dest: /etc/asterisk/{{ item }}.conf
+    owner: asterisk
+    group: asterisk
+    mode: 0640
   loop:
     - logger
     - modules   # module loader
@@ -56,7 +67,7 @@
   template:
     src: config/voicemail.conf
     dest: /etc/asterisk/voicemail.conf
-    owner: root
+    owner: asterisk
     group: asterisk
     mode: 0640
   notify: restart asterisk service
@@ -94,6 +105,7 @@
       secret = {{ ast_ami_admin_password }}
       read = all
       write = all
+    force: true
     owner: root
     group: asterisk
     mode: 0640

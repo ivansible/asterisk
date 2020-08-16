@@ -32,7 +32,7 @@
     src: sip.conf
     dest: /etc/asterisk/sip.conf
     backup: true
-    owner: root
+    owner: asterisk
     group: asterisk
     mode: 0640
   notify: restart asterisk service
@@ -43,7 +43,7 @@
     src: extensions.conf
     dest: /etc/asterisk/extensions.conf
     backup: true
-    owner: root
+    owner: asterisk
     group: asterisk
     mode: 0640
   notify: restart asterisk service
@@ -53,6 +53,9 @@
     src: dialplan/menu.conf
     dest: /etc/asterisk/dialplan.d/menu.conf
     backup: true
+    owner: root
+    group: asterisk
+    mode: 0640
   notify: restart asterisk service
 
 - name: configure common dialplan includes
@@ -60,6 +63,9 @@
     src: dialplan/{{ item }}.conf
     dest: /etc/asterisk/dialplan.d/{{ item }}.common.conf
     backup: true
+    owner: root
+    group: asterisk
+    mode: 0640
   loop:
     - macros
     - services
@@ -69,16 +75,24 @@
 - name: null sip registrations to workaround include error
   copy:
     dest: /etc/asterisk/sip.d/null.register.conf
+    owner: root
+    group: asterisk
+    mode: 0640
+    force: true
     content: |
       ;; sip.d/null.register.conf
       ;; ansible-managed
       ; no registrations
+  notify: restart asterisk service
 
 - name: configure sip peers for softphones
   template:
     src: softphones-peers.conf
     dest: /etc/asterisk/sip.d/softphones.peers.conf
     backup: true
+    owner: root
+    group: asterisk
+    mode: 0640
   notify: restart asterisk service
 
 - name: configure dialplan extensions for softphones
@@ -86,13 +100,19 @@
     src: softphones-dialplan.conf
     dest: /etc/asterisk/dialplan.d/softphones.rules.conf
     backup: true
+    owner: root
+    group: asterisk
+    mode: 0640
   notify: restart asterisk service
 
 - name: enable dialplan contexts for softphones
   lineinfile:
     path: /etc/asterisk/context.d/softphones.conf
-    create: true
     line: include => {{ item }}
+    create: true
+    owner: root
+    group: asterisk
+    mode: 0640
   loop:
     - services
     - softphones

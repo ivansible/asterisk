@@ -19,6 +19,7 @@
     owner: root
     group: asterisk
     mode: 0750
+    force: true
     content: |
       #!/bin/bash
       echo "$(basename $0): '$*'"
@@ -28,7 +29,9 @@
   copy:
     dest: /etc/sudoers.d/99-asterisk
     owner: root
+    group: root
     mode: 0440
+    force: true
     content: |
       asterisk  ALL=(ALL) NOPASSWD: /usr/local/asterisk/bin/
   tags: ast_sudo

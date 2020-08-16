@@ -7,6 +7,8 @@
 - name: set asterisk cpu quota (if enabled)
   copy:
     dest: /etc/systemd/system/asterisk.service.d/cpu_quota.conf
+    force: true
+    mode: 0644
     content: |
       [Service]
       CPUAccounting=yes

@@ -16,6 +16,7 @@
     owner: root
     group: asterisk
     mode: 0644
+    force: true
     content: |
       ;; acl.d/{{ acl }}.conf
       ;; ansible-managed

@@ -30,6 +30,7 @@
     owner: root
     group: asterisk
     mode: 0750
+    force: true
 
 - name: derive music-on-hold wav file names
   shell: |
@@ -59,5 +60,9 @@
       ;sort = alpha
       sort = random
       digit = 1
+    owner: asterisk
+    group: asterisk
+    mode: 0640
+    force: true
   notify: restart asterisk service
 ...

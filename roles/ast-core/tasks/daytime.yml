@@ -38,4 +38,5 @@
     owner: root
     group: asterisk
     mode: 0750
+    force: true
 ...

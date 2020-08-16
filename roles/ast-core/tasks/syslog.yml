@@ -2,16 +2,19 @@
 - name: configure syslog for asterisk
   copy:
     dest: /etc/rsyslog.d/33-asterisk.conf
+    force: false
+    mode: 0644
     content: |
       :programname,isequal,"asterisk" /var/log/asterisk.log
       & stop
-    force: false
   notify: restart syslog service
 
 
 - name: rotate asterisk log files
   copy:
     dest: /etc/logrotate.d/asterisk
+    force: true
+    mode: 0644
     content: |
       /var/log/asterisk/security
       /var/log/asterisk/debug
@@ -45,7 +48,6 @@
               invoke-rc.d rsyslog rotate > /dev/null 2> /dev/null
           endscript
       }
-    force: true
   vars:
     commentout: "{{ '' if lin_compress_logs |bool or lin_compress_logs is none else '#' }}"
 ...

@@ -69,9 +69,10 @@
 - name: configure asterisk res_odbc module
   copy:
     dest: /etc/asterisk/res_odbc.conf
-    owner: root
+    owner: asterisk
     group: asterisk
     mode: 0640
+    force: true
     content: |
       ;; ansible-managed
       [asterisk]
@@ -92,6 +93,10 @@
 - name: configure func_odbc for testing
   copy:
     dest: /etc/asterisk/func_odbc.conf
+    owner: asterisk
+    group: asterisk
+    mode: 0640
+    force: true
     content: |
       ;; ansible-managed
       ; ODBC_SQL(select * from cdr)
@@ -122,6 +127,10 @@
 - name: configure cdr_adaptive_odbc module
   copy:
     dest: /etc/asterisk/cdr_adaptive_odbc.conf
+    owner: asterisk
+    group: asterisk
+    mode: 0640
+    force: true
     content: |
       ;; ansible-managed
       [default]
