@@ -31,8 +31,8 @@
     path: "{{ ast_local_dir }}/bin"
     state: directory
 
-# free g729 benchmark. see:
-# http://asterisk.hosting.lv/
+## free g729 benchmark, see:
+## http://asterisk.hosting.lv/
 - block:
     - name: install free G729 benchmark
       unarchive:
@@ -54,14 +54,15 @@
         src: "../g729-bench-free/run-bench.sh"
         dest: "{{ ast_local_dir }}/bin/g729-bench-free.sh"
 
-  when: ast_g729_bench_enable |bool
-        and ast_g729_bench_free_tarball_url != '' # noqa 602
+  when:
+    - ast_g729_bench_enable |bool
+    - ast_g729_bench_free_tarball_url |d('')
   tags: ast_g729_bench
 
 
-# digium g729 benchmark. see:
-# https://www.digium.com/products/software/g729-codec
-# http://downloads.digium.com/pub/telephony/codec_g729/README
+## digium g729 benchmark. see:
+## https://www.digium.com/products/software/g729-codec
+## http://downloads.digium.com/pub/telephony/codec_g729/README
 - block:
     - name: install digium G729 benchmark
       unarchive:
@@ -95,7 +96,8 @@
       when: not _docker_binary.stat.exists
             and lin_use_docker |bool
 
-  when: ast_g729_bench_enable |bool
-        and ast_g729_bench_digium_tarball_url != '' # noqa 602
+  when:
+    - ast_g729_bench_enable |bool
+    - ast_g729_bench_digium_tarball_url |d('')
   tags: ast_g729_bench
 ...

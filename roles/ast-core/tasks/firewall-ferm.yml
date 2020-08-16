@@ -42,7 +42,7 @@
       hashlimit-burst {{ ast_sip_burst }}
       hashlimit-mode srcip
       hashlimit-name asterisk-sip
-  when: ast_sip_limit != ''  # noqa 602
+  when: ast_sip_limit |d('')
 
 
 - name: open asterisk sip-tls port in ferm

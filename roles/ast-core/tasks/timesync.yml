@@ -20,5 +20,5 @@
   ## so we don't have to stop/start ntp service
   command: ntpdate -u "{{ ast_ntp_server }}"
   changed_when: false
-  when: ast_ntp_server != '' # noqa 602
+  when: ast_ntp_server |d('')
 ...

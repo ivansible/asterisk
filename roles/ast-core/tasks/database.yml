@@ -8,6 +8,7 @@
     port: "{{ ast_pg_port }}"
     login_user: postgres
     login_password: "{{ srv_pg_admin_password }}"
+  no_log: "{{ hide_secrets |bool }}"
   register: ast_pg_user_result
 
 - name: create asterisk postgres database
@@ -33,15 +34,16 @@
     tasks_from: postgresql_db_restore_encrypted.yml
   vars:
     backup_url: "{{ ast_pg_dump_url }}"
-    #backup_secret: use common secret
+    # backup_secret: use common secret
     db_name: "{{ ast_pg_dbname }}"
     login_host: "{{ ast_pg_host }}"
     db_port: "{{ ast_pg_port }}"
     login_password: "{{ srv_pg_admin_password }}"
-  when: (ast_reset |bool
-         or (ast_pg_user_result is changed
-             or ast_pg_database_result is changed))
-        and ast_pg_dump_url != '' # noqa 602
+  when:
+    - (ast_reset |bool
+       or ast_pg_user_result is changed
+       or ast_pg_database_result is changed)
+    - ast_pg_dump_url |d('')
 
 
 - name: configure asterisk database in unix ODBC
@@ -60,9 +62,9 @@
       Database = {{ ast_pg_dbname }}
       SSLMode = prefer
     marker: "; {mark} asterisk (ansible-managed)"
-    # use the following command to test odbc connection:
-    # $ odbcinst -q -d
-    # $ echo "select 1" | isql -v asterisk asterisk {{ast_pg_pass}}
+    ## Use the following command to test odbc connection:
+    ## $ odbcinst -q -d
+    ## $ echo "select 1" | isql -v asterisk asterisk {{ast_pg_pass}}
 
 - name: configure asterisk res_odbc module
   copy:
@@ -104,18 +106,18 @@
       synopsis=Count CDRs after specified date
   notify: restart asterisk service
 
-#
-# how to test database access via func_odbc:
-#
-# extensions.conf:
-# [default]
-# exten => 5,1,Verbose(${ODBC_SQL(select count(*) from cdr)})
-#    same => n,Verbose(${ODBC_COUNTCDR(2008-09-02)})
-#
-# $ rasterisk
-# > dialplan reload
-# > console dial 5
-#
+##
+## Testing database access via func_odbc:
+##
+## extensions.conf:
+## [default]
+## exten => 5,1,Verbose(${ODBC_SQL(select count(*) from cdr)})
+##    same => n,Verbose(${ODBC_COUNTCDR(2008-09-02)})
+##
+## $ rasterisk
+## > dialplan reload
+## > console dial 5
+##
 
 - name: configure cdr_adaptive_odbc module
   copy:
@@ -137,9 +139,10 @@
       ;;   cdr show status
   notify: restart asterisk service
 
-#
-# how to test cdr in database:
-# make a test call then issue this sql:
-#   select * from cdr order by calldate desc limit 1;
-#
+##
+## Testing CDR in database:
+##
+## make a test call then issue this sql:
+##   select * from cdr order by calldate desc limit 1;
+##
 ...
