@@ -1,0 +1,49 @@
+---
+## default asterisk network settings
+
+ast_sip_port: 5060
+ast_tls_port: 5061
+
+ast_rtp_port_start: 10100
+ast_rtp_port_end: 10300
+
+ast_ami_port: 5038
+ast_http_port: 8088
+ast_https_port: 8089
+
+
+ast_ip_list_cleared: "{{ ansible_all_ipv4_addresses
+                       | reject('match', '^10[.]')
+                       | reject('match', '^172[.]1[0-9][.]')
+                       | list }}"
+ast_ip_list: "{{ ast_ip_list_cleared or ansible_all_ipv4_addresses }}"
+
+
+## up to 10 new connections per minute per ip
+ast_sip_limit: 10/min
+ast_sip_burst: 5
+
+ast_hackers_max_hits: 100
+
+
+ast_sip_allowed_networks:
+  - any
+
+ast_reject_networks: []
+# - 192.168.77.1/32
+
+## true      = prefer ipv4
+## false     = do not prefer ipv4
+## undefined = do not change /etc/gai.conf
+# ast_prefer_ipv4: false
+
+
+ast_default_nat: true  # not used?
+
+## stun address:
+##  stun.tld.com
+##  stun.tld.com:3478
+##  "172.1.2.3"
+##  "172.1.2.3:3478"
+ast_stun_addr: ""
+...

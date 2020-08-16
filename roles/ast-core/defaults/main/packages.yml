@@ -1,0 +1,53 @@
+---
+## asterisk OS packages
+
+
+ast_packages_install:
+  ## asterisk core
+  - asterisk
+  - asterisk-config
+  - asterisk-modules
+  - asterisk-voicemail
+
+  ## it is important to install format-agnostic asterisk sound packages
+  ## (and not asterisk-core-sounds-{en,ru}-wav) because they create
+  ## the en/ru symbolic links under /usr/share/asterisk/sounds,
+  ## which are required by the extra sounds installation task.
+  - asterisk-core-sounds-en
+  - asterisk-core-sounds-ru
+
+  ## for playing MP3 MOH natively
+  - asterisk-mp3
+
+  ## for converting moh files
+  - sox
+  - libsox-fmt-all
+  - libsox-fmt-mp3
+
+  ## for snakeoil certificate
+  - ssl-cert
+
+  ## for agi scripts
+  - python3
+
+  ## for database
+  - "{{ lin_use_python2 |ternary('python-psycopg2', '') }}"
+  - python3-psycopg2
+  - postgresql-client
+  - unixodbc
+  - odbc-postgresql
+
+  ## for sip debugging
+  - ngrep
+  - sngrep
+  - sipgrep
+  - tcpdump
+
+  ## asterisk requires precise time
+  - ntp
+  - ntpdate
+  ## for restoring asterisk config
+  - rsync
+  ## for downloading g729 codecs
+  - wget
+...
