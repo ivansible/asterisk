@@ -1,3 +1,17 @@
 ---
 is_permitted: false
+lin_use_ssh: false
+lin_firewall: 'none'
+
+## internal ports for test
+ast_sip_port: 55560
+ast_tls_port: 55561
+srv_pg_port: 55432
+ast_pg_port: "{{ srv_pg_port }}"
+
+# random secrets for test
+test_pass: "{{ lookup('password', '/tmp/testpass chars=hexdigits') }}"
+ast_pg_pass: "{{ test_pass }}_ast"
+ast_ami_admin_password: "{{ test_pass }}_ami"
+srv_pg_admin_password: "{{ test_pass }}_pg"
 ...
