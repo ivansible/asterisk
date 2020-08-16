@@ -11,24 +11,32 @@
     path: ~/.local/bashrc/4alias.sh
   register: stat_bash_alias
 
-- name: common bashrc customizations
-  include_role:
-    name: ivansible.dev_user
-    tasks_from: bashrc.yml
-    apply:
-      tags:
-        - ast_user
-        - ast_core_all
+- name: add asterisk bash aliases
+  block:
+    - name: add user-local asterisk aliases (ok to fail, will rescue)
+      lineinfile:
+        path: ~/.local/bashrc/4alias.sh
+        line: "alias {{ item.0 }}='{{ item.1 }}'"
+        regexp: "^alias {{ item.0 }}="
+        insertafter: '^# END ANSIBLE'
+      no_log: "{{ hide_secrets |bool }}"  # reduce possible error message
+      loop: "{{ aliases |dictsort }}"
+      loop_control:
+        label: "{{ item.0 }}"
       become: false
-  when: not stat_bash_alias.stat.exists
-
-- name: alias for running asterisk console
-  lineinfile:
-    # alias file must correspond with role ivansible.dev_user
-    # https://github.com/ivansible/dev-user/blob/master/tasks/bashrc.yml
-    path: ~/.local/bashrc/4alias.sh
-    line: "alias astcli='setterm -linewrap off ; sudo asterisk -r ; setterm -linewrap on'"
-    regexp: "^alias astcli *="
-    insertafter: "^# END ANSIBLE"
-  become: false
+  rescue:
+    - name: add global asterisk aliases
+      lineinfile:
+        path: /etc/bash_completion.d/asterisk
+        line: "alias {{ item.0 }}='{{ item.1 }}'"
+        regexp: "^alias {{ item.0 }}="
+        create: true
+        mode: 0644
+      loop: "{{ aliases |dictsort }}"
+      loop_control:
+        label: "{{ item.0 }}"
+      become: true
+  vars:
+    aliases:
+      astcli: 'setterm -linewrap off ; sudo asterisk -r ; setterm -linewrap on'
 ...

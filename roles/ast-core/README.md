@@ -314,7 +314,6 @@ This role also inherits the following handlers from `ivansible.lin_base`:
 
 The following roles are imported directly from tasks:
   - ivansible.lin_docker  (installs docker for digium G729 benchmark)
-  - ivansible.dev_user    (prepares local bash rc file)
 
 Some other roles depend on this one, but inclusion should be done explicitly
 in playbook to avoid repetitive execution.

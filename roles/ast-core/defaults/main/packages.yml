@@ -50,4 +50,7 @@ ast_packages_install:
   - rsync
   ## for downloading g729 codecs
   - wget
+
+  ## miscellaneous
+  - bash-completion
 ...

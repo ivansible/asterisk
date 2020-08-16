@@ -5,7 +5,6 @@ dependencies:
   - ivansible.backup_base    # for postgresql_db_restore_encrypted.yml
   ## the following roles are imported directly from tasks:
   # - ivansible.lin_docker
-  # - ivansible.dev_user
 
 galaxy_info:
   role_name: ast_core
