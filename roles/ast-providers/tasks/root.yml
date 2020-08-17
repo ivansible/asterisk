@@ -26,14 +26,20 @@
   template:
     src: providers-dialplan.conf
     dest: /etc/asterisk/dialplan.d/providers.rules.conf
+    owner: root
+    group: asterisk
+    mode: 0640
   notify: reload asterisk service
 
 
 - name: enable other contexts for inward calls from providers
   lineinfile:
     path: /etc/asterisk/context.d/providers.conf
+    line: "include => {{ item }}"
     create: true
-    line: include => {{ item }}
+    owner: root
+    group: asterisk
+    mode: 0640
   loop:
     - softphones
     - "{{ ast_soho_phones_alias }}"
@@ -43,8 +49,11 @@
 - name: enable outward providers calls for other contexts
   lineinfile:
     path: /etc/asterisk/context.d/{{ item }}.conf
+    line: "include => providers-out"
     create: true
-    line: include => providers-out
+    owner: root
+    group: asterisk
+    mode: 0640
   loop:
     - softphones
     - "{{ ast_soho_phones_alias }}"
