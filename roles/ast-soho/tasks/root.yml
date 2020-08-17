@@ -39,14 +39,20 @@
   template:
     src: soho-dialplan.conf
     dest: /etc/asterisk/dialplan.d/{{ ast_soho_gateway_alias }}.rules.conf
+    owner: root
+    group: asterisk
+    mode: 0640
   notify: reload asterisk service
 
 
 - name: enable dialplan contexts for soho phones
   lineinfile:
     path: /etc/asterisk/context.d/{{ ast_soho_phones_alias }}.conf
+    line: "include => {{ item }}"
     create: true
-    line: include => {{ item }}
+    owner: root
+    group: asterisk
+    mode: 0640
   loop:
     - "{{ ast_soho_phones_alias }}"
     - "{{ ast_soho_gateway_alias }}-services"
@@ -57,8 +63,11 @@
 - name: enable soho dialplan contexts for softphones
   lineinfile:
     path: /etc/asterisk/context.d/softphones.conf
+    line: "include => {{ item }}"
     create: true
-    line: include => {{ item }}
+    owner: root
+    group: asterisk
+    mode: 0640
   loop:
     - "{{ ast_soho_phones_alias }}"
     - "{{ ast_soho_gateway_alias }}-services"
