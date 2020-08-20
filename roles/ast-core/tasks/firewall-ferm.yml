@@ -30,11 +30,13 @@
     name: asterisk-sip-limit
     rule: |
       # Asterisk SIP Limit
-      proto tcp syn dport {{ ast_sip_port }} {{ match_limit }} DROP;
-      proto tcp syn dport {{ ast_tls_port }} {{ match_limit }} DROP;
-      proto udp     dport {{ ast_sip_port }} {{ match_limit }} DROP;
-    hook: input
-    prio: 50
+      domain $ip_all table filter chain $INPUT {
+        proto tcp syn dport {{ ast_sip_port }} {{ match_limit }} DROP;
+        proto tcp syn dport {{ ast_tls_port }} {{ match_limit }} DROP;
+        proto udp     dport {{ ast_sip_port }} {{ match_limit }} DROP;
+      }
+    hook: custom
+    prio: 21
   vars:
     match_limit: >-
       mod hashlimit
