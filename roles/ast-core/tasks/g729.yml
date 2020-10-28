@@ -16,7 +16,8 @@
 - name: create link alias for chosen G729 codec
   file:
     state: link
-    src: "{{ ast_g729_codec_url | basename }}"
+    ## strip query line from url ("?dl=1" for dropbox)
+    src: "{{ ast_g729_codec_url |basename |regex_replace('\\?.*$') }}"
     dest: "{{ ast_local_dir }}/codec-g729/codec_g729.so"
 
 - name: create G729 codec link in the asterisk module directory
