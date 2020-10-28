@@ -1,7 +1,6 @@
 # ivansible.ast_core
 
-[![Github Test Status](https://github.com/ivansible/ast-core/workflows/Molecule%20test/badge.svg?branch=master)](https://github.com/ivansible/ast-core/actions)
-[![Travis Test Status](https://travis-ci.org/ivansible/ast-core.svg?branch=master)](https://travis-ci.org/ivansible/ast-core)
+[![Github Test Status](https://github.com/ivansible/ast-core/workflows/test/badge.svg?branch=master)](https://github.com/ivansible/ast-core/actions)
 [![Ansible Galaxy](https://img.shields.io/badge/galaxy-ivansible.ast__core-68a.svg?style=flat)](https://galaxy.ansible.com/ivansible/ast_core/)
 
 
@@ -326,6 +325,8 @@ in playbook to avoid repetitive execution.
 This role invokes task `postgresql_db_restore_encrypted.yml`
 from role `ivansible.backup_base` and uses default encryption secret.
 
+Also depends on `ivansible.cert_base` for default certbot settings.
+
 
 # Music-On-Hold
 
@@ -509,4 +510,4 @@ MIT
 
 ## Author Information
 
-Created in 2018-2020 by [IvanSible](https://github.com/ivansible)
+Created in 2018-2021 by [IvanSible](https://github.com/ivansible)

@@ -3,6 +3,7 @@ dependencies:
   - ivansible.lin_base       # for common linux defaults, handlers, modules
   - ivansible.ast_base       # for common asterisk defaults and handlers
   - ivansible.backup_base    # for postgresql_db_restore_encrypted.yml
+  - ivansible.cert_base      # for default certbot settings
   ## the following roles are imported directly from tasks:
   # - ivansible.lin_docker
 
@@ -12,7 +13,7 @@ galaxy_info:
   description: "deploy asterisk server on linux"
   company: "IvanSible"
   license: MIT
-  min_ansible_version: 2.5
+  min_ansible_version: 2.9
 
   platforms:
     - name: Ubuntu
