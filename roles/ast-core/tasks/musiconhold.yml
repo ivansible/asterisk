@@ -3,6 +3,7 @@
   file:
     path: "{{ ast_local_dir }}/moh/wav"
     state: directory
+    mode: 0755
 
 - name: download and unpack music-on-hold extra sounds (mp3)
   unarchive:
@@ -15,6 +16,7 @@
   file:
     path: "{{ ast_local_dir }}/bin"
     state: directory
+    mode: 0755
 
 - name: deploy music-on-hold mp3-to-wav conversion script
   copy:

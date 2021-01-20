@@ -42,5 +42,6 @@
     section: options
     option: rungroup
     state: absent
+    mode: 0640
   notify: restart asterisk service
 ...

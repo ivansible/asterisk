@@ -77,12 +77,14 @@
   template:
     src: config/http.conf
     dest: /etc/asterisk/http.conf
+    mode: 0640
   notify: restart asterisk service
 
 - name: configure asterisk ami over tcp and http
   template:
     src: config/manager.conf
     dest: /etc/asterisk/manager.conf
+    mode: 0640
   notify: restart asterisk service
 
 - name: harden permissions on the ami manager.d directory
@@ -131,17 +133,17 @@
 
 
 - name: adjust scattered asterisk options
-  ini_file:
+  ini_file:  # noqa 208
     dest: /etc/asterisk/{{ item.0.file }}.conf
     section: "{{ item.0.section }}"
     option: "{{ item.1.keys() | first }}"
     value: "{{ item.1.values() | first }}"
   # no_log: "{{ hide_secrets |bool }}"
   with_subelements:
-    - "{{ ast_params_default
-        + ast_params_group
-        + ast_params_host }}"
+    - "{{ all_params }}"
     - params
+  vars:
+    all_params: "{{ ast_params_default + ast_params_group + ast_params_host }}"
   loop_control:
     label: "{{ item.0.file }}.{{ item.0.section }}.{{ item.1.keys() | first }}"
   notify: restart asterisk service

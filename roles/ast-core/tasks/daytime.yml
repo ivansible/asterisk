@@ -3,6 +3,7 @@
   file:
     path: "{{ ast_local_dir }}/sounds"
     state: directory
+    mode: 0755
 
 - name: download and unpack extra asterisk sounds (wav)
   unarchive:
@@ -30,6 +31,7 @@
   file:
     path: "{{ ast_local_dir }}/agi"
     state: directory
+    mode: 0755
 
 - name: deploy daytime agi script (python3)
   copy:

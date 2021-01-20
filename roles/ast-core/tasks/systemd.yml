@@ -3,6 +3,7 @@
   file:
     path: /etc/systemd/system/asterisk.service.d
     state: directory
+    mode: 0755
 
 - name: set asterisk cpu quota (if enabled)
   copy:

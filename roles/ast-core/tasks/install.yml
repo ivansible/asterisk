@@ -11,6 +11,7 @@
   file:
     path: "{{ ast_local_dir }}/bin"
     state: directory
+    mode: 0755
   tags: ast_sudo
 
 - name: wrapper for asterisk sudo commands

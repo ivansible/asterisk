@@ -3,6 +3,7 @@
   file:
     path: "{{ ast_local_dir }}/codec-g729"
     state: directory
+    mode: 0755
 
 - name: download G729 codec module
   get_url:
@@ -31,6 +32,7 @@
   file:
     path: "{{ ast_local_dir }}/bin"
     state: directory
+    mode: 0755
 
 ## free g729 benchmark, see:
 ## http://asterisk.hosting.lv/
