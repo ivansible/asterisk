@@ -4,7 +4,7 @@
 ast_webui_server: ~
 ast_webui_lecert: ~
 ast_webui_bindip: 127.0.0.1
-ast_webui_origin: 192.168.1.1
+ast_webui_origin: http://192.168.1.1/
 
 ast_webui_cloudflare_email: ~
 ast_webui_cloudflare_token: ~

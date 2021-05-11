@@ -23,7 +23,7 @@ Name of custom letsencrypt certificate for the server (optional).
     ast_webui_bindip: 127.0.0.1
 IP addresses where nginx listens.
 
-    ast_webui_origin: 192.168.1.1
+    ast_webui_origin: http://192.168.1.1/
 Host name or IP address of the origin server.
 
     ast_webui_cloudflare_email: ~
