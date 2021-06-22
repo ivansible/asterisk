@@ -6,6 +6,7 @@
   vars:
     acl: "{{ provider.name }}"
     networks: "{{ provider.networks }}"
+    comment: "{{ provider.networks_comment |default(provider.name) }}"
   when: provider.networks is defined
         and provider.networks | length > 0
   loop: "{{ ast_providers | json_query('[?!!active]') }}"
