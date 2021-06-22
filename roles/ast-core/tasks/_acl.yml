@@ -10,7 +10,7 @@
 #     - ...
 # note: empty network list means "permit all"
 
-- name: create or update asterisk acl rule "{{ acl }}"
+- name: update asterisk acl rule "{{ acl }}"
   copy:
     dest: /etc/asterisk/acl.d/{{ acl }}.conf
     owner: root
@@ -36,7 +36,22 @@
       permit = {{ net_or_comment }}
       {% endif %}
       {% endfor %}
-  when: acl is defined and networks is defined
+  when:
+    - acl |default('')
+    - networks |default([])
   become: true
   notify: reload asterisk service
+
+- name: update ferm asterisk rule "{{ acl }}"
+  ferm_host:
+    host: "{{ networks }}"
+    zone: media
+    comment: "{{ comment }}"
+  become: true
+  when:
+    - lin_firewall == 'ferm'
+    - comment |default('')
+    - networks |default([])
+  tags: ast_firewall
+
 ...

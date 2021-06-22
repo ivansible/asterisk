@@ -1,28 +1,26 @@
 ---
-- name: open asterisk sip port for all in ferm
+- name: open asterisk SIP port for all/some networks in ferm
   # this step is separate because we want to specify
   # a list of ip networks given access to the non-tls port
   ferm_port:
     port: "{{ ast_sip_port }}"
-    zone: external
+    zone: "{{ ast_sip_allow_all |bool |ternary('external', 'media') }}"
+    solo_zone: true
     comment: asterisk sip
-  when: ast_sip_allowed_networks |length == 0
-        or 'any' in ast_sip_allowed_networks
 
-- name: open asterisk sip port for some networks in ferm
+- name: open asterisk RTP ports for all/some networks in ferm
   ferm_port:
-    port: "{{ ast_sip_port }}"
-    zone: internal
-    comment: asterisk sip
-  when: ast_sip_allowed_networks |length > 0
-        and 'any' not in ast_sip_allowed_networks
+    port: "{{ ast_rtp_port_start }}:{{ ast_rtp_port_end }}"
+    proto: udp
+    zone: "{{ ast_rtp_allow_all |bool |ternary('external', 'media') }}"
+    solo_zone: true
+    comment: asterisk rtp
 
 - name: add networks allowed for asterisk sip port in ferm
   ferm_host:
-    host: "{{ ast_sip_allowed_networks }}"
-    zone: internal
+    host: "{{ ast_allow_networks }}"
+    zone: media
     comment: asterisk
-  when: "'any' not in ast_sip_allowed_networks"
 
 
 - name: set connection limit on asterisk sip port
@@ -52,13 +50,6 @@
     port: "{{ ast_tls_port }}"
     zone: external
     comment: asterisk tls
-
-- name: open asterisk rtp ports in ferm
-  ferm_port:
-    port: "{{ ast_rtp_port_start }}:{{ ast_rtp_port_end }}"
-    proto: udp
-    zone: external
-    comment: asterisk rtp
 
 
 - name: close asterisk ami ports in ferm
