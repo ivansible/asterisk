@@ -1,5 +1,6 @@
 ---
-- debug:
+- name: print overview
+  debug:
     msg:
       - "ast_domains: {{ ast_domains }}"
       - "ast_ip_list: {{ ast_ip_list }}"
