@@ -43,7 +43,7 @@
   notify: reload asterisk service
 
 - name: update ferm asterisk rule "{{ acl }}"
-  ferm_host:
+  ivansible.base.ferm_host:
     host: "{{ networks }}"
     zone: media
     comment: "{{ comment }}"
