@@ -1,7 +1,7 @@
 ---
 dependencies:
-  - ivansible.nginx_base  # for common defaults and custom modules
-  # ivansible.lin_nginx   (implicit dependency)
+  - ivansible.base.nginx  # for common defaults and custom modules
+  # - ivansible.nginx.nginx  # (implicit dependency)
 
 galaxy_info:
   role_name: ast_webui

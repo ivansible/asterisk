@@ -95,7 +95,7 @@
 
     - name: deploy docker required by digium benchmark
       include_role:
-        name: ivansible.lin_docker
+        name: ivansible.linux.docker
       when: not _docker_binary.stat.exists
             and lin_use_docker |bool
 

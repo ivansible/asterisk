@@ -9,7 +9,7 @@
 
     - name: enable public key for gitlab.com
       import_role:
-        name: ivansible.lin_ssh
+        name: ivansible.linux.ssh
         tasks_from: known_hosts.yml
       vars:
         lin_ssh_known_hosts:

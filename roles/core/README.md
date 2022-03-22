@@ -452,7 +452,7 @@ This role contains a task group for creating white-list ACLs,
 which can be invoked in other asterisk roles as follows:
 ```
 - include_role:
-    name: ivansible.ast_core
+    name: ivansible.asterisk.core
     tasks_from: _acl.yml
   vars:
     acl: <acl_name>

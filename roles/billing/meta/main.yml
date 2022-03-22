@@ -1,9 +1,9 @@
 ---
 dependencies:
-  - ivansible.ast_base  # for common asterisk defaults and handlers
-  # this and other roles really depend on ast_core, but inclusion
+  - ivansible.base.asterisk  # for common asterisk defaults and handlers
+  # this and other roles really depend on asterisk.core, but the inclusion
   # should be done explicitly in playbook to avoid repetitive execution.
-  # - ivansible.ast_core
+  # - ivansible.asterisk.core
 
 galaxy_info:
   role_name: ast_billing
