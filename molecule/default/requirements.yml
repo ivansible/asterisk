@@ -1,0 +1,7 @@
+---
+collections:
+  - git+https://github.com/ivansible/base
+  - git+https://github.com/ivansible/linux
+  ## ivansible.server.postgres is required by ivansible.asterisk.core
+  - git+https://github.com/ivansible/server
+...

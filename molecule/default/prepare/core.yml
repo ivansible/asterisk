@@ -1,0 +1,7 @@
+---
+- name: prepare
+  hosts: all
+  roles:
+    - ivansible.linux.core
+    - ivansible.server.postgres
+...
