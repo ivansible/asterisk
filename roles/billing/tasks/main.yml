@@ -5,6 +5,7 @@
       file:
         path: "{{ ast_billing_dir }}"
         state: directory
+        mode: 0755
       become: false
 
     - name: enable public key for gitlab.com
@@ -21,10 +22,10 @@
         repo: "{{ ast_billing_repo }}"
         version: master
         dest: "{{ ast_billing_dir }}"
-        # only clone, don't choke on pending modifications
+        ## only clone, don't choke on pending modifications
         update: false
-        # key file not needed because we forward ssh agent
-        #key_file: ~/.ssh/git_repo.key
+        ## key file not needed because we forward ssh agent
+        # key_file: ~/.ssh/git_repo.key
       become: false
 
     - name: install common python packages for billing
@@ -34,10 +35,10 @@
           - build-essential
           - libcurl4-openssl-dev
           - libssl-dev
-          # - libpython-dev
-          # - postgresql-server-dev-10
-          # - libxml2-dev
-          # - libxslt1-dev
+          # libpython-dev
+          # postgresql-server-dev-10
+          # libxml2-dev
+          # libxslt1-dev
       become: true
 
     - name: install bionic+ packages for billing
@@ -52,7 +53,7 @@
         virtualenv_python: python2
         requirements: "{{ ast_billing_dir }}/requirements.txt"
       become: false
-  # end of block
+  ## end of block
   tags: ast_billing_all
 
 
@@ -98,7 +99,7 @@
         force: false
       become: true
 
-  # end of block
+  ## end of block
   tags: ast_billing_all
 
 
@@ -116,6 +117,7 @@
       file:
         path: "{{ ast_local_dir }}/agi"
         state: directory
+        mode: 0755
 
     - name: create asterisk agi executables for billing
       copy:
@@ -135,6 +137,7 @@
       file:
         state: directory
         path: /etc/asterisk/dialplan.d
+        mode: 0750
 
     - name: create dialplan rules for billing
       copy:
@@ -151,6 +154,7 @@
               same => n,Goto(endcall,1)
 
           ;; ========
+        mode: 0644
       notify: "{{ ast_billing_got_asterisk |bool |ternary('reload asterisk service',[]) }}"
 
     - name: enable billing dialplan rules for other contexts
@@ -158,12 +162,13 @@
         path: /etc/asterisk/context.d/{{ item }}.conf
         create: true
         line: include => billing-services
+        mode: 0640
       when: item |default('')
       loop:
         - softphones
         - "{{ ast_soho_phones_alias |default('') }}"
       notify: "{{ ast_billing_got_asterisk |bool |ternary('reload asterisk service',[]) }}"
-  # end of block
+  ## end of block
   become: true
   tags: ast_billing_all
 ...
