@@ -20,6 +20,7 @@
   template:
     src: gigaset.conf
     dest: "{{ nginx_site_dir }}/gigaset.conf"
+    mode: 0644
   become: true
   notify: reload nginx service
   when: ast_webui_server |default('')
