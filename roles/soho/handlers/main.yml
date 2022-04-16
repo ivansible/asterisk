@@ -1,7 +1,7 @@
 ---
-# handlers for ivansible.ast_soho
+## handlers for ivansible.asterisk.soho
 
-# inherited from ast_base:
-# - restart asterisk service
-# - reload asterisk service
+## inherited from ivansible.base.asterisk:
+## - restart asterisk service
+## - reload asterisk service
 ...

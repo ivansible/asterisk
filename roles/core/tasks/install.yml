@@ -1,6 +1,6 @@
 ---
 - name: install core asterisk packages
-  apt:
+  ansible.builtin.apt:
     name: "{{ ast_packages_install |select |list }}"
     state: present
     install_recommends: false
@@ -8,14 +8,14 @@
 
 
 - name: directory for local asterisk files
-  file:
+  ansible.builtin.file:
     path: "{{ ast_local_dir }}/bin"
     state: directory
     mode: 0755
   tags: ast_sudo
 
 - name: wrapper for asterisk sudo commands
-  copy:
+  ansible.builtin.copy:
     dest: /usr/local/asterisk/bin/suexec
     owner: root
     group: asterisk
@@ -27,7 +27,7 @@
   tags: ast_sudo
 
 - name: let asterisk sudo-run limited commands as root
-  copy:
+  ansible.builtin.copy:
     dest: /etc/sudoers.d/99-asterisk
     owner: root
     group: root
@@ -39,7 +39,7 @@
 
 
 - name: set glibc ipv4/ipv6 preference
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/gai.conf
     line: "{{ ast_prefer_ipv4 |bool |ternary('','#') }}precedence ::ffff:0:0/96  100"
     regexp: "^#*precedence *::ffff:0:0/96 *"

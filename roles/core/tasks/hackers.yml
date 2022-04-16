@@ -1,12 +1,12 @@
 ---
 - name: configure limit on asterisk connection attempts per host
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/default/asterisk
     regexp: "^HACKER_HITS="
     line: "HACKER_HITS={{ ast_hackers_max_hits }}"
 
 - name: create asterisk anti-hacker shell script
-  template:
+  ansible.builtin.template:
     src: hackers/asterisk-hackers.sh
     dest: /etc/cron.daily/asterisk-hackers
     mode: 0755

@@ -1,7 +1,7 @@
 ---
 - name: open asterisk SIP port for all/some networks in ferm
-  # this step is separate because we want to specify
-  # a list of ip networks given access to the non-tls port
+  ## this step is separate because we want to specify
+  ## a list of ip networks given access to the non-tls port
   ivansible.base.ferm_port:
     port: "{{ ast_sip_port }}"
     zone: "{{ ast_sip_allow_all |bool |ternary('external', 'media') }}"

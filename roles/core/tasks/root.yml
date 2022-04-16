@@ -1,36 +1,46 @@
 ---
-- import_tasks: install.yml
+- name: install tasks
+  ansible.builtin.import_tasks: install.yml
   tags: ast_install
 
-- import_tasks: ssl.yml
+- name: ssl tasks
+  ansible.builtin.import_tasks: ssl.yml
   tags: ast_ssl
 
-- import_tasks: g729.yml
+- name: g729 tasks
+  ansible.builtin.import_tasks: g729.yml
   tags: ast_g729
 
-- import_tasks: config.yml
+- name: config tasks
+  ansible.builtin.import_tasks: config.yml
   tags: ast_config
 
-- import_tasks: musiconhold.yml
+- name: musiconhold tasks
+  ansible.builtin.import_tasks: musiconhold.yml
   tags: ast_moh
 
-# AGI script speaking current time in ru/en
-- import_tasks: daytime.yml
+## AGI script speaking current time in ru/en
+- name: daytime tasks
+  ansible.builtin.import_tasks: daytime.yml
   tags: ast_daytime
 
-- import_tasks: database.yml
+- name: database tasks
+  ansible.builtin.import_tasks: database.yml
   tags: ast_database
 
-- import_tasks: dialplan.yml
+- name: dialplan tasks
+  ansible.builtin.import_tasks: dialplan.yml
   tags: ast_dialplan
 
-- import_tasks: systemd.yml
+- name: systemd tasks
+  ansible.builtin.import_tasks: systemd.yml
   tags:
     - ast_systemd
     - ast_cpu_quota
 
 
-- include_tasks: firewall-ufw.yml
+- name: ufw tasks
+  ansible.builtin.include_tasks: firewall-ufw.yml
   args:
     apply:
       become: true
@@ -38,7 +48,8 @@
   when: lin_firewall == 'ufw'
   tags: ast_firewall
 
-- include_tasks: firewall-ferm.yml
+- name: ferm tasks
+  ansible.builtin.include_tasks: firewall-ferm.yml
   args:
     apply:
       become: true
@@ -48,16 +59,19 @@
   when: lin_firewall == 'ferm'
   tags: ast_firewall
 
-- import_tasks: hackers.yml
+- name: anti-hackers tasks
+  ansible.builtin.import_tasks: hackers.yml
   tags: ast_hackers
 
 
-- import_tasks: syslog.yml
+- name: syslog tasks
+  ansible.builtin.import_tasks: syslog.yml
   when: lin_use_rsyslog |bool
   tags: ast_syslog
 
-# asterisk rtp stream bridging requires precise local time
-- import_tasks: timesync.yml
+## asterisk rtp stream bridging requires precise local time
+- name: time synch tasks
+  ansible.builtin.import_tasks: timesync.yml
   when: ast_time_sync_enable |bool
   tags: ast_timesync
 ...

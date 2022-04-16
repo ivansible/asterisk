@@ -1,11 +1,11 @@
 ---
-# handlers for ivansible.ast_core
+## handlers for ivansible.asterisk.core
 
-# inherited from lin_base:
-# - reload systemd daemon
-# - reload ubuntu firewall
+## inherited from ivansible.base.linux:
+## - reload systemd daemon
+## - reload ubuntu firewall
 
-# inherited from ast_base:
-# - restart asterisk service
-# - reload asterisk service
+## inherited from ivansible.base.asterisk:
+## - restart asterisk service
+## - reload asterisk service
 ...

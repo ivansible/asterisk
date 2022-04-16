@@ -1,12 +1,12 @@
 ---
 - name: directory for codec G729
-  file:
+  ansible.builtin.file:
     path: "{{ ast_local_dir }}/codec-g729"
     state: directory
     mode: 0755
 
 - name: download G729 codec module
-  get_url:
+  ansible.builtin.get_url:
     url: "{{ ast_g729_codec_url }}"
     dest: "{{ ast_local_dir }}/codec-g729/"
     mode: 0644
@@ -15,21 +15,21 @@
   when: not ansible_check_mode
 
 - name: create link alias for chosen G729 codec
-  file:
+  ansible.builtin.file:
     state: link
     ## strip query line from url ("?dl=1" for dropbox)
     src: "{{ ast_g729_codec_url |basename |regex_replace('\\?.*$') }}"
     dest: "{{ ast_local_dir }}/codec-g729/codec_g729.so"
 
 - name: create G729 codec link in the asterisk module directory
-  file:
+  ansible.builtin.file:
     state: link
     src: "{{ ast_local_dir }}/codec-g729/codec_g729.so"
     dest: /usr/lib/asterisk/modules/codec_g729.so
 
 
 - name: directory for local asterisk benchmark binaries
-  file:
+  ansible.builtin.file:
     path: "{{ ast_local_dir }}/bin"
     state: directory
     mode: 0755
@@ -38,21 +38,21 @@
 ## http://asterisk.hosting.lv/
 - block:
     - name: install free G729 benchmark
-      unarchive:
+      ansible.builtin.unarchive:
         src: "{{ ast_g729_bench_free_tarball_url }}"
         dest: "{{ ast_local_dir }}"
         remote_src: true
         creates: "{{ ast_local_dir }}/g729-bench-free/run-bench.sh"
 
     - name: fix permissions on the free benchmark running script
-      file:
+      ansible.builtin.file:
         path: "{{ ast_local_dir }}/g729-bench-free/run-bench.sh"
         owner: root
         group: asterisk
         mode: 0750
 
     - name: symbolic link for running free benchmark
-      file:
+      ansible.builtin.file:
         state: link
         src: "../g729-bench-free/run-bench.sh"
         dest: "{{ ast_local_dir }}/bin/g729-bench-free.sh"
@@ -68,36 +68,37 @@
 ## http://downloads.digium.com/pub/telephony/codec_g729/README
 - block:
     - name: install digium G729 benchmark
-      unarchive:
+      ansible.builtin.unarchive:
         src: "{{ ast_g729_bench_digium_tarball_url }}"
         dest: "{{ ast_local_dir }}"
         remote_src: true
         creates: "{{ ast_local_dir }}/g729-bench-digium/run-bench.sh"
 
     - name: fix permissions on the digium benchmark running script
-      file:
+      ansible.builtin.file:
         path: "{{ ast_local_dir }}/g729-bench-digium/run-bench.sh"
         owner: root
         group: asterisk
         mode: 0750
 
     - name: symbolic link for running digium benchmark
-      file:
+      ansible.builtin.file:
         state: link
         src: "../g729-bench-digium/run-bench.sh"
         dest: "{{ ast_local_dir }}/bin/g729-bench-digium.sh"
 
     - name: check whether docker is installed
-      stat:
+      ansible.builtin.stat:
         path: /usr/bin/docker
         get_checksum: false
       register: _docker_binary
 
     - name: deploy docker required by digium benchmark
-      include_role:
+      ansible.builtin.include_role:
         name: ivansible.linux.docker
-      when: not _docker_binary.stat.exists
-            and lin_use_docker |bool
+      when:
+        - not _docker_binary.stat.exists
+        - lin_use_docker |bool
 
   when:
     - ast_g729_bench_enable |bool

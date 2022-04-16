@@ -1,6 +1,6 @@
 ---
 - name: network whitelist for soho gateway provider
-  include_role:
+  ansible.builtin.include_role:
     name: ivansible.asterisk.core
     tasks_from: _acl.yml
   vars:
@@ -8,7 +8,7 @@
     networks: "{{ ast_soho_gateway_networks }}"
 
 - name: network whitelist for soho sip-phones
-  include_role:
+  ansible.builtin.include_role:
     name: ivansible.asterisk.core
     tasks_from: _acl.yml
   vars:
@@ -17,7 +17,7 @@
 
 
 - name: sip peers for soho gateway
-  template:
+  ansible.builtin.template:
     src: gateway-peers.conf
     dest: /etc/asterisk/sip.d/{{ ast_soho_gateway_alias }}.peers.conf
     owner: root
@@ -26,7 +26,7 @@
   notify: reload asterisk service
 
 - name: sip peers for soho phones
-  template:
+  ansible.builtin.template:
     src: phones-peers.conf
     dest: /etc/asterisk/sip.d/{{ ast_soho_phones_alias }}.peers.conf
     owner: root
@@ -36,7 +36,7 @@
 
 
 - name: dialplan rules for soho gateway and phones
-  template:
+  ansible.builtin.template:
     src: soho-dialplan.conf
     dest: /etc/asterisk/dialplan.d/{{ ast_soho_gateway_alias }}.rules.conf
     owner: root
@@ -46,7 +46,7 @@
 
 
 - name: enable dialplan contexts for soho phones
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/asterisk/context.d/{{ ast_soho_phones_alias }}.conf
     line: "include => {{ item }}"
     create: true
@@ -61,7 +61,7 @@
   notify: reload asterisk service
 
 - name: enable soho dialplan contexts for softphones
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/asterisk/context.d/softphones.conf
     line: "include => {{ item }}"
     create: true

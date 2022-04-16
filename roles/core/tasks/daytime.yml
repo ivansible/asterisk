@@ -1,12 +1,12 @@
 ---
 - name: directory for extra asterisk sounds
-  file:
+  ansible.builtin.file:
     path: "{{ ast_local_dir }}/sounds"
     state: directory
     mode: 0755
 
 - name: download and unpack extra asterisk sounds (wav)
-  unarchive:
+  ansible.builtin.unarchive:
     src: "{{ ast_sounds_extras_wav_url }}"
     dest: "{{ ast_local_dir }}/sounds"
     remote_src: true
@@ -14,12 +14,12 @@
     owner: root
     group: root
 
-# it is important to install format-agnostic asterisk sound packages
+# It is important to install format-agnostic asterisk sound packages
 # (and not asterisk-core-sounds-{en,ru}-wav) because they create
 # the en/ru symbolic links under /usr/share/asterisk/sounds,
 # which are required by this task.
 - name: link extra sounds into asterisk sound locations
-  file:
+  ansible.builtin.file:
     state: link
     src: "{{ ast_local_dir }}/sounds/extras/{{ lang }}"
     dest: /usr/share/asterisk/sounds/{{ lang }}/extras
@@ -28,13 +28,13 @@
     loop_var: lang
 
 - name: directory for daytime agi script
-  file:
+  ansible.builtin.file:
     path: "{{ ast_local_dir }}/agi"
     state: directory
     mode: 0755
 
 - name: deploy daytime agi script (python3)
-  copy:
+  ansible.builtin.copy:
     src: daytime.py
     dest: "{{ ast_local_dir }}/agi/daytime"
     owner: root

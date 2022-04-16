@@ -2,13 +2,14 @@
 ## synchronize system time
 
 - name: enable ntp sync
-  command: timedatectl set-ntp true
+  ansible.builtin.command:
+    cmd: timedatectl set-ntp true
   changed_when: false
   ## fails on ubuntu 20.04 'focal' with "Failed to set ntp: NTP not supported"
   when: lin_systemd_ntp |bool
 
 - name: activate ntp daemon
-  systemd:
+  ansible.builtin.systemd:
     name: ntp
     state: started
     enabled: true
@@ -18,7 +19,8 @@
   ## "-u" = use unprivileged port for outgoing packets,
   ## helps when ntp service is running (or against firewalls),
   ## so we don't have to stop/start ntp service
-  command: ntpdate -u "{{ ast_ntp_server }}"
+  ansible.builtin.command:
+    cmd: ntpdate -u "{{ ast_ntp_server }}"
   changed_when: false
   when: ast_ntp_server |d('')
 ...

@@ -1,17 +1,17 @@
 ---
 - name: most asterisk tasks require privileged access
-  import_tasks: root.yml
+  ansible.builtin.import_tasks: root.yml
   become: true
   tags:
     - ast_core_all
 
 - name: non-root asterisk tasks
-  import_tasks: user.yml
+  ansible.builtin.import_tasks: user.yml
   become: false
   tags:
     - ast_user
     - ast_core_all
 
 - name: flush handlers - restart asterisk etc
-  meta: flush_handlers
+  ansible.builtin.meta: flush_handlers
 ...

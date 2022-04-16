@@ -1,20 +1,20 @@
 ---
 - name: grant remote user with access to asterisk
-  user:
+  ansible.builtin.user:
     name: "{{ ansible_user_id }}"
     groups: asterisk
     append: true
   become: true
 
 - name: check whether bash alias file already exists
-  stat:
+  ansible.builtin.stat:
     path: ~/.local/bashrc/4alias.sh
   register: stat_bash_alias
 
 - name: add asterisk bash aliases
   block:
     - name: add user-local asterisk aliases (ok to fail, will rescue)
-      lineinfile:
+      ansible.builtin.lineinfile:
         path: ~/.local/bashrc/4alias.sh
         line: "alias {{ item.0 }}='{{ item.1 }}'"
         regexp: "^alias {{ item.0 }}="
@@ -26,7 +26,7 @@
       become: false
   rescue:
     - name: add global asterisk aliases
-      lineinfile:
+      ansible.builtin.lineinfile:
         path: /etc/bash_completion.d/asterisk
         line: "alias {{ item.0 }}='{{ item.1 }}'"
         regexp: "^alias {{ item.0 }}="

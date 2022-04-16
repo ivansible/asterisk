@@ -1,6 +1,6 @@
 ---
 - name: configure syslog for asterisk
-  copy:
+  ansible.builtin.copy:
     dest: /etc/rsyslog.d/33-asterisk.conf
     force: false
     mode: 0644
@@ -11,7 +11,7 @@
 
 
 - name: rotate asterisk log files
-  copy:
+  ansible.builtin.copy:
     dest: /etc/logrotate.d/asterisk
     force: true
     mode: 0644

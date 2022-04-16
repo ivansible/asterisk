@@ -1,12 +1,12 @@
 ---
 - name: print overview
-  debug:
+  ansible.builtin.debug:
     msg:
       - "ast_domains: {{ ast_domains }}"
       - "ast_ip_list: {{ ast_ip_list }}"
 
 - name: remove ael and lua flavors, using only old-school extensions.conf
-  file:
+  ansible.builtin.file:
     path: /etc/asterisk/{{ item }}
     state: absent
   loop:
@@ -16,7 +16,7 @@
   notify: restart asterisk service
 
 - name: directories for sip and dialplan includes
-  file:
+  ansible.builtin.file:
     path: /etc/asterisk/{{ item }}
     state: directory
     owner: root
@@ -29,7 +29,7 @@
 
 
 - name: configure sip.conf
-  template:
+  ansible.builtin.template:
     src: sip.conf
     dest: /etc/asterisk/sip.conf
     backup: true
@@ -40,7 +40,7 @@
 
 
 - name: configure extensions.conf
-  template:
+  ansible.builtin.template:
     src: extensions.conf
     dest: /etc/asterisk/extensions.conf
     backup: true
@@ -50,7 +50,7 @@
   notify: restart asterisk service
 
 - name: configure included dialplan menu
-  template:
+  ansible.builtin.template:
     src: dialplan/menu.conf
     dest: /etc/asterisk/dialplan.d/menu.conf
     backup: true
@@ -60,7 +60,7 @@
   notify: restart asterisk service
 
 - name: configure common dialplan includes
-  template:
+  ansible.builtin.template:
     src: dialplan/{{ item }}.conf
     dest: /etc/asterisk/dialplan.d/{{ item }}.common.conf
     backup: true
@@ -74,7 +74,7 @@
 
 
 - name: null sip registrations to workaround include error
-  copy:
+  ansible.builtin.copy:
     dest: /etc/asterisk/sip.d/null.register.conf
     owner: root
     group: asterisk
@@ -87,7 +87,7 @@
   notify: restart asterisk service
 
 - name: configure sip peers for softphones
-  template:
+  ansible.builtin.template:
     src: softphones-peers.conf
     dest: /etc/asterisk/sip.d/softphones.peers.conf
     backup: true
@@ -97,7 +97,7 @@
   notify: restart asterisk service
 
 - name: configure dialplan extensions for softphones
-  template:
+  ansible.builtin.template:
     src: softphones-dialplan.conf
     dest: /etc/asterisk/dialplan.d/softphones.rules.conf
     backup: true
@@ -107,7 +107,7 @@
   notify: restart asterisk service
 
 - name: enable dialplan contexts for softphones
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/asterisk/context.d/softphones.conf
     line: include => {{ item }}
     create: true

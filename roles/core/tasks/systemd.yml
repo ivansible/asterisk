@@ -1,12 +1,12 @@
 ---
 - name: directory for asterisk service drop-in
-  file:
+  ansible.builtin.file:
     path: /etc/systemd/system/asterisk.service.d
     state: directory
     mode: 0755
 
 - name: set asterisk cpu quota (if enabled)
-  copy:
+  ansible.builtin.copy:
     dest: /etc/systemd/system/asterisk.service.d/cpu_quota.conf
     force: true
     mode: 0644
@@ -20,7 +20,7 @@
   when: ast_cpu_quota not in ['', '100%', 'no', false]
 
 - name: remove asterisk cpu quota (if disabled)
-  file:
+  ansible.builtin.file:
     path: /etc/systemd/system/asterisk.service.d/cpu_quota.conf
     state: absent
   notify:
@@ -30,7 +30,7 @@
 
 
 - name: enable asterisk service
-  systemd:
+  ansible.builtin.systemd:
     name: asterisk
     state: started
     enabled: true

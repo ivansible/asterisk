@@ -1,6 +1,6 @@
 ---
 - name: create asterisk postgres user
-  postgresql_user:
+  community.postgresql.postgresql_user:
     name: "{{ ast_pg_user }}"
     password: "{{ ast_pg_pass }}"
 
@@ -12,7 +12,7 @@
   register: ast_pg_user_result
 
 - name: create asterisk postgres database
-  postgresql_db:
+  community.postgresql.postgresql_db:
     name: "{{ ast_pg_dbname }}"
     state: present
     owner: "{{ ast_pg_user }}"
@@ -29,7 +29,7 @@
 
 
 - name: restore asterisk database from backup
-  include_role:
+  ansible.builtin.include_role:
     name: ivansible.base.backup
     tasks_from: postgresql_db_restore_encrypted.yml
   vars:
@@ -47,7 +47,7 @@
 
 
 - name: configure asterisk database in unix ODBC
-  blockinfile:
+  ansible.builtin.blockinfile:
     path: /etc/odbc.ini
     create: true
     owner: root
@@ -67,7 +67,7 @@
     ## $ echo "select 1" | isql -v asterisk asterisk {{ast_pg_pass}}
 
 - name: configure asterisk res_odbc module
-  copy:
+  ansible.builtin.copy:
     dest: /etc/asterisk/res_odbc.conf
     owner: asterisk
     group: asterisk
@@ -84,14 +84,14 @@
   notify: restart asterisk service
 
 - name: ensure that res_odbc is preloaded before other modules
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/asterisk/modules.conf
     line: "preload => res_odbc.so"
     insertafter: "^autoload *="
   notify: restart asterisk service
 
 - name: configure func_odbc for testing
-  copy:
+  ansible.builtin.copy:
     dest: /etc/asterisk/func_odbc.conf
     owner: asterisk
     group: asterisk
@@ -111,7 +111,6 @@
       synopsis=Count CDRs after specified date
   notify: restart asterisk service
 
-##
 ## Testing database access via func_odbc:
 ##
 ## extensions.conf:
@@ -122,10 +121,9 @@
 ## $ rasterisk
 ## > dialplan reload
 ## > console dial 5
-##
 
 - name: configure cdr_adaptive_odbc module
-  copy:
+  ansible.builtin.copy:
     dest: /etc/asterisk/cdr_adaptive_odbc.conf
     owner: asterisk
     group: asterisk
@@ -148,10 +146,8 @@
       ;;   cdr show status
   notify: restart asterisk service
 
-##
 ## Testing CDR in database:
 ##
 ## make a test call then issue this sql:
 ##   select * from cdr order by calldate desc limit 1;
-##
 ...

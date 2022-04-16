@@ -1,21 +1,22 @@
 ---
 - name: network whitelist for asterisk providers
-  include_role:
+  ansible.builtin.include_role:
     name: ivansible.asterisk.core
     tasks_from: _acl.yml
   vars:
     acl: "{{ provider.name }}"
     networks: "{{ provider.networks }}"
-    comment: "{{ provider.networks_comment |default(provider.name) }}"
-  when: provider.networks is defined
-        and provider.networks | length > 0
+    comment: "{{ provider.networks_comment |d(provider.name) }}"
+  when:
+    - provider.networks is defined
+    - provider.networks | length > 0
   loop: "{{ ast_providers | json_query('[?!!active]') }}"
   loop_control:
     loop_var: provider
 
 
 - name: sip peers for asterisk providers
-  template:
+  ansible.builtin.template:
     src: providers-peers.conf
     dest: /etc/asterisk/sip.d/providers.peers.conf
     owner: root
@@ -24,7 +25,7 @@
   notify: reload asterisk service
 
 - name: dialplan rules for asterisk providers
-  template:
+  ansible.builtin.template:
     src: providers-dialplan.conf
     dest: /etc/asterisk/dialplan.d/providers.rules.conf
     owner: root
@@ -34,7 +35,7 @@
 
 
 - name: enable other contexts for inward calls from providers
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/asterisk/context.d/providers.conf
     line: "include => {{ item }}"
     create: true
@@ -48,7 +49,7 @@
   notify: reload asterisk service
 
 - name: enable outward providers calls for other contexts
-  lineinfile:
+  ansible.builtin.lineinfile:
     path: /etc/asterisk/context.d/{{ item }}.conf
     line: "include => providers-out"
     create: true

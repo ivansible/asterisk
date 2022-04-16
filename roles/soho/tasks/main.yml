@@ -1,9 +1,9 @@
 ---
 - name: use import to become root globally
-  import_tasks: root.yml
+  ansible.builtin.import_tasks: root.yml
   become: true
   tags: ast_soho_all
 
 - name: flush handlers
-  meta: flush_handlers
+  ansible.builtin.meta: flush_handlers
 ...

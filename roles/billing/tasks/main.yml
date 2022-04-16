@@ -2,14 +2,14 @@
 - name: install billing library
   block:
     - name: create directory for billing code
-      file:
+      ansible.builtin.file:
         path: "{{ ast_billing_dir }}"
         state: directory
         mode: 0755
       become: false
 
     - name: enable public key for gitlab.com
-      import_role:
+      ansible.builtin.import_role:
         name: ivansible.linux.ssh
         tasks_from: known_hosts.yml
       vars:
@@ -18,7 +18,7 @@
       become: true
 
     - name: checkout billing code
-      git:
+      ansible.builtin.git:
         repo: "{{ ast_billing_repo }}"
         version: master
         dest: "{{ ast_billing_dir }}"
@@ -29,7 +29,7 @@
       become: false
 
     - name: install common python packages for billing
-      apt:
+      ansible.builtin.apt:
         name:
           - python
           - build-essential
@@ -42,13 +42,13 @@
       become: true
 
     - name: install bionic+ packages for billing
-      apt:
+      ansible.builtin.apt:
         name: "{{ lin_use_python2 |bool |ternary('libpython-dev', 'libpython2-dev') }}"
       when: ansible_lsb.release is version('18.04','>=')
       become: true
 
     - name: install python dependencies for billing
-      pip:
+      ansible.builtin.pip:
         virtualenv: "{{ ast_billing_dir }}/venv"
         virtualenv_python: python2
         requirements: "{{ ast_billing_dir }}/requirements.txt"
@@ -60,7 +60,7 @@
 - name: configure billing library
   block:
     - name: create initial options.ini for billing
-      command:
+      ansible.builtin.command:
         argv:
           - cp
           - -a
@@ -71,7 +71,7 @@
       become: false
 
     - name: tweak billing options
-      ini_file:
+      community.general.ini_file:
         dest: "{{ ast_billing_dir }}/etc/options.ini"
         section: "{{ opt.section }}"
         option: "{{ opt.option }}"
@@ -87,7 +87,7 @@
       become: true
 
     - name: configure billing library secrets
-      copy:
+      ansible.builtin.copy:
         dest: "{{ ast_billing_dir }}/etc/secrets.psv"
         content: |
           {%- for peer in ast_billing_secrets -%}
@@ -106,7 +106,7 @@
 - name: configure asterisk for billing
   block:
     - name: fix permissions on asterisk log directory
-      file:
+      ansible.builtin.file:
         path: /var/log/asterisk
         owner: asterisk
         group: asterisk
@@ -114,13 +114,13 @@
       when: ast_billing_got_asterisk |bool
 
     - name: create directory for asterisk agi executables
-      file:
+      ansible.builtin.file:
         path: "{{ ast_local_dir }}/agi"
         state: directory
         mode: 0755
 
     - name: create asterisk agi executables for billing
-      copy:
+      ansible.builtin.copy:
         dest: "{{ ast_local_dir }}/agi/billing-dialer"
         content: |
           #!{{ ast_billing_dir }}/venv/bin/python
@@ -134,13 +134,13 @@
         mode: 0755
 
     - name: create directory for asterisk dialplan rules
-      file:
+      ansible.builtin.file:
         state: directory
         path: /etc/asterisk/dialplan.d
         mode: 0750
 
     - name: create dialplan rules for billing
-      copy:
+      ansible.builtin.copy:
         dest: /etc/asterisk/dialplan.d/billing.rules.conf
         content: |
           ;; dialplan.d/billing.rules.conf
@@ -158,7 +158,7 @@
       notify: "{{ ast_billing_got_asterisk |bool |ternary('reload asterisk service',[]) }}"
 
     - name: enable billing dialplan rules for other contexts
-      lineinfile:
+      ansible.builtin.lineinfile:
         path: /etc/asterisk/context.d/{{ item }}.conf
         create: true
         line: include => billing-services

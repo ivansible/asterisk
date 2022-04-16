@@ -1,9 +1,9 @@
 ---
 - name: become root and install the role
-  import_tasks: root.yml
+  ansible.builtin.import_tasks: root.yml
   become: true
   tags: ast_providers_all
 
 - name: flush handlers
-  meta: flush_handlers
+  ansible.builtin.meta: flush_handlers
 ...

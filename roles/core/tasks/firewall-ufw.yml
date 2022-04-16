@@ -1,8 +1,8 @@
 ---
 - name: open asterisk sip port in ufw
-  # this step is separate because we want to specify
-  # a list of ip networks given access to the non-tls port
-  ufw:
+  ## this step is separate because we want to specify
+  ## a list of ip networks given access to the non-tls port
+  community.general.ufw:
     port: "{{ ast_sip_port |string }}"
     rule: allow
     from: "{{ item }}"
@@ -10,13 +10,13 @@
   loop: "{{ ast_sip_allowed_networks }}"
 
 - name: open asterisk sip-tls port in ufw
-  ufw:
+  community.general.ufw:
     port: "{{ ast_tls_port |string }}"
     rule: allow
   no_log: "{{ hide_secrets |bool }}"
 
 - name: open asterisk rtp ports in ufw
-  ufw:
+  community.general.ufw:
     port: "{{ ast_rtp_port_start }}:{{ ast_rtp_port_end }}"
     proto: udp
     rule: allow
@@ -24,7 +24,7 @@
 
 
 - name: close asterisk ami ports in ufw
-  ufw:
+  community.general.ufw:
     port: "{{ item |string }}"
     rule: allow
     delete: true
@@ -36,7 +36,7 @@
 
 
 - name: disable annoying sip hackers in ufw
-  blockinfile:
+  ansible.builtin.blockinfile:
     path: /etc/ufw/before.rules
     block: |
       {% for network in ast_reject_networks %}

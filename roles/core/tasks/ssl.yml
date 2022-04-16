@@ -1,6 +1,6 @@
 ---
 - name: verify that asterisk certificate and key exist
-  file:
+  ansible.builtin.file:
     path: "{{ item }}"
     state: file
   loop:
@@ -8,36 +8,36 @@
     - "{{ ast_ssl_key }}"
 
 - name: grant asterisk user with access to ssl private key
-  user:
+  ansible.builtin.user:
     name: asterisk
-    groups: "{{ certbot_group |default('ssl-cert') }}"
+    groups: "{{ certbot_group |d('ssl-cert') }}"
     append: true
   notify: restart asterisk service
 
 - name: ensure that ssl key file is readable by asterisk, not by world
-  file:
+  ansible.builtin.file:
     path: "{{ ast_ssl_key }}"
     state: file
-    group: "{{ certbot_group |default('ssl-cert') }}"
+    group: "{{ certbot_group |d('ssl-cert') }}"
     mode: 'o='
 
 - name: ensure that asterisk can accces private key directory
-  file:
+  ansible.builtin.file:
     path: "{{ ast_ssl_key |dirname }}"
     state: directory
-    group: "{{ certbot_group |default('ssl-cert') }}"
+    group: "{{ certbot_group |d('ssl-cert') }}"
     mode: g+rx
 
-# Note:
-# when `rungroup` is set, the asterisk process will have only
-# those access permissions that are associated with that group.
-# when `rungroup` is *not* set, but `runuser` is set, the asterisk
-# process will have access permissions associated with *all*
-# groups where the user participates.
-# this allows to control permissions of the asterisk process
-# more flexibly (e.g. access to ssl certificates).
+## Note:
+## When `rungroup` is set, the asterisk process will have only
+## those access permissions that are associated with that group.
+## When `rungroup` is *not* set, but `runuser` is set, the asterisk
+## process will have access permissions associated with *all*
+## groups where the user participates.
+## This allows to control permissions of the asterisk process
+## more flexibly (e.g. access to ssl certificates).
 - name: disable fixed process group for access to ssl certificates
-  ini_file:
+  community.general.ini_file:
     dest: /etc/asterisk/asterisk.conf
     section: options
     option: rungroup

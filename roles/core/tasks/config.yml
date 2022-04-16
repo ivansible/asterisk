@@ -1,11 +1,11 @@
 ---
 - name: backup vanilla asterisk config
-  command:
+  ansible.builtin.command:
     cmd: cp -a /etc/asterisk /etc/asterisk.orig
     creates: /etc/asterisk.orig
 
 - name: reset asterisk config from backup
-  synchronize:
+  ansible.posix.synchronize:
     src: /etc/asterisk.orig/
     dest: /etc/asterisk/
     delete: true
@@ -15,7 +15,7 @@
 
 
 - name: create directory for acl rules
-  file:
+  ansible.builtin.file:
     path: /etc/asterisk/acl.d
     state: directory
     owner: root
@@ -23,7 +23,7 @@
     mode: 0750
 
 - name: create the permit-all acl rule
-  copy:
+  ansible.builtin.copy:
     dest: /etc/asterisk/acl.d/all.conf
     content: |
       ; permit all networks
@@ -35,7 +35,7 @@
     force: true
 
 - name: create /etc/asterisk/acl.conf
-  copy:
+  ansible.builtin.copy:
     dest: /etc/asterisk/acl.conf
     content: |
       ;; acl.conf
@@ -49,7 +49,7 @@
 
 
 - name: configure core asterisk modules
-  template:
+  ansible.builtin.template:
     src: config/{{ item }}.conf
     dest: /etc/asterisk/{{ item }}.conf
     owner: asterisk
@@ -64,7 +64,7 @@
 
 
 - name: configure asterisk voicemail
-  template:
+  ansible.builtin.template:
     src: config/voicemail.conf
     dest: /etc/asterisk/voicemail.conf
     owner: asterisk
@@ -74,21 +74,21 @@
 
 
 - name: configure asterisk http for ami
-  template:
+  ansible.builtin.template:
     src: config/http.conf
     dest: /etc/asterisk/http.conf
     mode: 0640
   notify: restart asterisk service
 
 - name: configure asterisk ami over tcp and http
-  template:
+  ansible.builtin.template:
     src: config/manager.conf
     dest: /etc/asterisk/manager.conf
     mode: 0640
   notify: restart asterisk service
 
 - name: harden permissions on the ami manager.d directory
-  file:
+  ansible.builtin.file:
     path: /etc/asterisk/manager.d
     state: directory
     owner: root
@@ -96,8 +96,8 @@
     mode: 0750
 
 - name: configure admin user for asterisk ami
-  copy:
-    # see: asterisk definitive guide, page 558
+  ansible.builtin.copy:
+    ## see: asterisk definitive guide, page 558
     dest: /etc/asterisk/manager.d/admin.conf
     content: |
       ;; manager.d/admin.conf
@@ -113,31 +113,34 @@
     mode: 0640
   notify: restart asterisk service
 
-# Testing AMI over TCP:
-# telnet localhost 5038
-# Action: Login
-# Username: admin
-# Secret: XXX
-# .
-# Action: Ping
-# .
-# Action: Logoff
-# .
+## How to test AMI over TCP:
+##
+## telnet localhost 5038
+## Action: Login
+## Username: admin
+## Secret: XX
+## .
+## Action: Ping
+## .
+## Action: Logoff
+## .
 
-# Testing AMI over HTTPS:
-# baseurl="https://localhost:8089/asterisk"
-# curl -k -c cookie.txt "$baseurl/rawman?action=login&username=admin&secret=XXX"
-# curl -k -b cookie.txt "$baseurl/rawman?action=ping"
-# curl -k -b cookie.txt "$baseurl/rawman?action=logoff"
-# rm cookie.txt
+## How to test AMI over HTTPS:
+##
+## baseurl="https://localhost:8089/asterisk"
+## curl -k -c cookie.txt "$baseurl/rawman?action=login&username=admin&secret=XX"
+## curl -k -b cookie.txt "$baseurl/rawman?action=ping"
+## curl -k -b cookie.txt "$baseurl/rawman?action=logoff"
+## rm cookie.txt
 
 
 - name: adjust scattered asterisk options
-  ini_file:  # noqa 208
+  community.general.ini_file:
+    # noqa 208
     dest: /etc/asterisk/{{ item.0.file }}.conf
     section: "{{ item.0.section }}"
-    option: "{{ item.1.keys() | first }}"
-    value: "{{ item.1.values() | first }}"
+    option: "{{ item.1.keys() |first }}"
+    value: "{{ item.1.values() |first }}"
   # no_log: "{{ hide_secrets |bool }}"
   with_subelements:
     - "{{ all_params }}"
@@ -145,6 +148,6 @@
   vars:
     all_params: "{{ ast_params_default + ast_params_group + ast_params_host }}"
   loop_control:
-    label: "{{ item.0.file }}.{{ item.0.section }}.{{ item.1.keys() | first }}"
+    label: "{{ item.0.file }}.{{ item.0.section }}.{{ item.1.keys() |first }}"
   notify: restart asterisk service
 ...

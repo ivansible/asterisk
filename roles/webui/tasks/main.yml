@@ -1,6 +1,6 @@
 ---
 - name: setup webui dns record in cloudflare
-  cloudflare_dns:
+  community.general.cloudflare_dns:
     account_email: "{{ ast_webui_cloudflare_email }}"
     account_api_token: "{{ ast_webui_cloudflare_token }}"
     zone: "{{ ast_webui_server.split('.')[-2:] |join('.') }}"
@@ -11,22 +11,22 @@
   become: false
   delegate_to: localhost
   when:
-    - ast_webui_server |default('')
-    - ast_webui_bindip |default('')
-    - ast_webui_cloudflare_token |default('')
+    - ast_webui_server |d('')
+    - ast_webui_bindip |d('')
+    - ast_webui_cloudflare_token |d('')
   tags: ast_webui_all
 
 - name: setup gigaset webui in nginx
-  template:
+  ansible.builtin.template:
     src: gigaset.conf
     dest: "{{ nginx_site_dir }}/gigaset.conf"
     mode: 0644
   become: true
   notify: reload nginx service
-  when: ast_webui_server |default('')
+  when: ast_webui_server |d('')
   tags: ast_webui_all
 
 - name: apply new nginx settings
-  meta: flush_handlers
+  ansible.builtin.meta: flush_handlers
   tags: ast_webui_all
 ...
